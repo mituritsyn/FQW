@@ -1,0 +1,265 @@
+%
+% Шаблон магистерской диссертации для московской хащиты 25.06.18
+%
+
+\documentclass[a4paper,12pt]{article}
+\usepackage[backend=biber,sorting=none,style=gost-numeric,autolang=other]{biblatex} % библиография
+\usepackage{mathtext} %русские буквы в формулах
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{amsmath}
+\usepackage{fancyvrb}
+\usepackage{formular}
+\usepackage{setspace} % управление междустрочными интервалами
+%поля документа
+\usepackage[left=3cm,right=1.5cm,top=2.5cm,bottom=2.5cm]{geometry}
+
+\usepackage{misccorr} % точки в конце номеров разделов, использовать перед пакетом ccaption!
+\usepackage{ccaption} % изменения подписей к рисункам и табл.
+
+\usepackage[nooneline]{caption} 
+\captionsetup[table]{justification=raggedright} % заголовок таблицы выравнивается влево
+\captionsetup[figure]{justification=centering,labelsep=endash} % заголовок рисунка - по центру
+
+% отступ перед первым абзацем
+\usepackage{indentfirst}
+%вставка изображений
+\usepackage{graphicx}
+% счетчики
+\usepackage{totcount}
+% управление содержанием
+\usepackage{tocloft}
+% управление таблицами и рисунками
+\usepackage{float}
+
+\newcounter{mycitecount}                                %% Счётчик библиографии
+\AtEveryBibitem{\stepcounter{mycitecount}}              %% Работает для biblatex
+
+\usepackage[figure,      %
+            table,       %
+            mycitecount, xspace ]{totalcount}           %% Подсчёт общего количества объектов в документе
+
+% окружение для листингов - с нумерацией строк слева
+\DefineVerbatimEnvironment{MyCode}{Verbatim}{frame=lines,numbers=left,numberblanklines=false,framesep=5mm}
+
+% автоматическая нумерация листингов
+\newfloat{Program}{phb}{lop}
+\floatname{Program}{Листинг}
+\floatstyle{ruled}
+
+\setcounter{secnumdepth}{3} % глубина нумерации до подразделов
+
+%если нужны точки в оглавлении для разделов - раскомментируйте следующую команду
+%\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+
+\addto\captionsrussian{%
+\renewcommand{\figurename}{Рисунок}%
+\renewcommand{\tablename}{Таблица}%
+}
+
+% дефис в подписи к рисункам
+\captiondelim{ -- } 
+
+% Настройки для окружений с подчеркиваниями для подписей и пр.
+\setFRMfontencoding{T2A}
+\setFRMdfontencoding{T2A}
+% thanks to A.Starikov
+\setFRMfontfamily{cmr}
+\setFRMdfontfamily{ptm}
+\setFRMdfontsize{10pt}
+
+% задает длину поля для подписи на титульной странице
+\newFRMfield{xtitlesign}{32mm}
+
+% поле для факультета или кафедры
+\newFRMfield{fcath}{65mm}
+
+%имя файла с библиографией в формате BibTex
+\addbibresource{rbiblio.bib}
+
+\begin{document}
+
+% счетчики страниц, рисунков, таблиц
+\regtotcounter{page}
+\regtotcounter{figure}
+\regtotcounter{table}
+
+\renewcommand{\refname}{\centerline{СПИСОК ИСПОЛЬЗОВАННОЙ ЛИТЕРАТУРЫ}} 
+\renewcommand{\contentsname}{\centerline{СОДЕРЖАНИЕ}} 
+%\renewcommand{\refname}{Список источников}  % По умолчанию "Список литературы" (article)
+%\renewcommand{\bibname}{Литература}  % По умолчанию "Литература" (book и report)
+
+%
+% титульная страница
+%
+\thispagestyle{empty}
+
+\onehalfspacing
+
+\newgeometry{left=1cm,right=1cm}
+
+\begin{center}
+\onehalfspacing
+
+\textbf{МИНИСТЕРСТВО ОБРАЗОВАНИЯ И НАУКИ РОССИЙСКОЙ ФЕДЕРАЦИИ}
+
+НАЦИОНАЛЬНЫЙ ИССЛЕДОВАТЕЛЬСКИЙ ЯДЕРНЫЙ УНИВЕРСИТЕТ «МИФИ»
+
+ИНСТИТУТ ИНТЕЛЛЕКТУАЛЬНЫХ КИБЕРНЕТИЧЕСКИХ СИСТЕМ
+КАФЕДРА «КОМПЬЮТЕРНЫЕ СИСТЕМЫ И ТЕХНОЛОГИИ»\end{center}
+%\vfill
+\vspace{1cm}
+\begin{flushright}
+На правах рукописи\\
+УДК \useFRMfield{fcath}
+\end{flushright}
+
+
+\vfill
+
+\begin{center}
+\large 
+ФАМИЛИЯ ИМЯ ОТЧЕСТВО\\
+
+Полное наименование НИР в соответствии с заданием\\
+
+ВЫПУСКНАЯ КВАЛИФИКАЦИОННАЯ РАБОТА МАГИСТРА
+\end{center}
+
+\begin{center}
+Направление подготовки ---  \textbf{09.04.02 Информационные системы и технологии}\\
+\end{center}
+
+\vspace{1cm}
+
+\begin{flushright}
+Выпускная квалификационная\\
+работа защищена\\
+2018 г.\\
+Оценка \\
+Секретарь ГЭК
+\end{flushright}
+\begin{center}
+г. Москва\\
+2018
+\end{center}
+
+\pagebreak
+
+\vfill
+
+
+\pagebreak
+
+% реферат
+\thispagestyle{empty}
+
+\section*{\centering РЕФЕРАТ}
+
+\total{page} стр., \total{table} табл., \total{figure} рис., \totalmycitecounts ист. 
+
+КЛЮЧЕВЫЕ СЛОВА В ВЕРХНЕМ РЕГИСТРЕ
+
+Работа посвящена --- кратко описать суть работы.
+
+Разработанная программа дает возможность --- что именно.
+
+\pagebreak
+\thispagestyle{empty}
+
+\section*{\centering ОПРЕДЕЛЕНИЯ}
+
+Репозиторий --- место, где хранятся и поддерживаются версии каких-либо данных. 
+
+\pagebreak
+
+\section*{\centering ОБОЗНАЧЕНИЯ И СОКРАЩЕНИЯ}
+
+
+НИР --- Научно-исследовательская работа
+
+СПВ --- Система поддержки версий
+
+
+
+\pagebreak
+
+
+
+\tableofcontents
+% если нужно добавить "Стр." над номерами страниц - раскомментируйте следующую команду
+%\addtocontents{toc}{~\hfill\textbf{Стр.}\par}
+
+\pagebreak
+
+\section*{\centering ВВЕДЕНИЕ}
+\addcontentsline{toc}{section}{ВВЕДЕНИЕ}
+\input{intro} % текст введения в файле intro.tex
+\pagebreak
+
+%\input{Post_zad}
+\pagebreak
+\input{part1}  % первая глава - в файле part1.tex
+\pagebreak
+\input{part2} % вторая глава - в файле part2.tex
+\pagebreak
+
+% если есть еще разделы - сохраните их в соответствующих файлах и раскомментируйте строки ниже, при необходимости добавьте еще
+%\input{part3}  % третья глава - в файле part3.tex
+%\pagebreak
+
+%\input{part4} % четвертая глава - в файле part4.tex
+%\pagebreak
+
+%\input{part5}  % пятая глава - в файле part5.tex
+%\pagebreak
+
+\section*{\centering ЗАКЛЮЧЕНИЕ}
+\addcontentsline{toc}{section}{ЗАКЛЮЧЕНИЕ}
+
+В ходе проделанной работы была проведена --- описать результаты бурной деятельности по выполнению НИР, разумно в виде списка выполненных задач.
+
+Разработанная программа позволяет --- перечислить основные функциональные характеристики и особенности.
+
+% оформление библиографии - вариант с БД
+\pagebreak
+
+\addcontentsline{toc}{section}{СПИСОК ИСПОЛЬЗОВАННОЙ ЛИТЕРАТУРЫ}
+% ВАЖНО: для корректного отображения в списке литературы ссылок на англ.языке в bibtex-описание источника следует добавить поле 
+% langid = {english}
+\printbibliography
+
+\pagebreak
+
+\section*{ \centering Приложение А} 
+\addcontentsline{toc}{section}{Приложение А}
+
+\begin{center}
+Листинг 1 -- Часть кода реализации класса \verb|HashMapValue|
+\end{center}
+
+
+\begin{MyCode}
+
+public class HashMapValue {
+	
+	protected String filename; 
+	protected HashMap<String, String> hashValue = 
+	new HashMap<>();
+	protected HashMap<String, Boolean> hashKeysFlag =
+	 new HashMap<>();
+	
+	public void setData(String key, String value) {
+		hashValue.put(key, value);
+	}
+	
+	public String getData(String key) {
+		return hashValue.get(key);
+	}
+    /* ... */
+}
+\end{MyCode}
+
+\end{document}          
+
