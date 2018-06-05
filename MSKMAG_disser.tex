@@ -82,6 +82,7 @@
 
 \newFRMfield{fldsign}{60mm}[подпись]
 \newFRMfield{fldfio}{60mm}[ФИО]
+\newFRMfield{udk}{27mm}[]
 
 \newFRMfield{fldfullfio}{90mm}[фамилия, имя, отчество]
 \newFRMfield{flddolg}{130mm}[фамилия, имя, отчество, организация, должность, звание, степень]
@@ -97,7 +98,7 @@
 \regtotcounter{figure}
 \regtotcounter{table}
 
-\renewcommand{\refname}{\centerline{СПИСОК ИСПОЛЬЗОВАННОЙ ЛИТЕРАТУРЫ}} 
+\renewcommand{\refname}{\centerline{СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ}} 
 \renewcommand{\contentsname}{\centerline{СОДЕРЖАНИЕ}} 
 %\renewcommand{\refname}{Список источников}  % По умолчанию "Список литературы" (article)
 %\renewcommand{\bibname}{Литература}  % По умолчанию "Литература" (book и report)
@@ -128,7 +129,7 @@
 \vspace{1cm}
 \begin{flushright}
 На правах рукописи\\
-УДК \rule{27mm}{0.15mm}
+УДК \useFRMfield{udk}[\large 004.XX]
 \end{flushright}
 
 \vspace{1cm}
@@ -281,15 +282,15 @@
 
 \section*{\centering ВВЕДЕНИЕ}
 \addcontentsline{toc}{section}{ВВЕДЕНИЕ}
-%\input{intro} % текст введения в файле intro.tex
-%\pagebreak
+\input{intro} % текст введения в файле intro.tex
+\pagebreak
 
 %\input{Post_zad}
 %\pagebreak
-%\input{part1}  % первая глава - в файле part1.tex
-%\pagebreak
-%\input{part2} % вторая глава - в файле part2.tex
-%\pagebreak
+\input{part1}  % первая глава - в файле part1.tex
+\pagebreak
+\input{part2} % вторая глава - в файле part2.tex
+\pagebreak
 
 % если есть еще разделы - сохраните их в соответствующих файлах и раскомментируйте строки ниже, при необходимости добавьте еще
 %\input{part3}  % третья глава - в файле part3.tex
@@ -314,7 +315,7 @@
 \addcontentsline{toc}{section}{СПИСОК ИСПОЛЬЗОВАННОЙ ЛИТЕРАТУРЫ}
 % ВАЖНО: для корректного отображения в списке литературы ссылок на англ.языке в bibtex-описание источника следует добавить поле 
 % langid = {english}
-%\printbibliography
+\printbibliography
 
 \pagebreak
 
