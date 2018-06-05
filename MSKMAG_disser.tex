@@ -75,6 +75,18 @@
 % поле для факультета или кафедры
 \newFRMfield{fcath}{65mm}
 
+%\newFRMfield{themefld}{}
+%
+%\setFRMinlinestyle
+%\newFRMenvironment{}{Тема}{1}
+
+\newFRMfield{fldsign}{60mm}[подпись]
+\newFRMfield{fldfio}{60mm}[ФИО]
+
+\newFRMfield{fldfullfio}{90mm}[фамилия, имя, отчество]
+\newFRMfield{flddolg}{130mm}[фамилия, имя, отчество, организация, должность, звание, степень]
+\newFRMfield{fldgroup}{23mm}
+\newFRMfield{fldtheme}{130mm}
 %имя файла с библиографией в формате BibTex
 \addbibresource{rbiblio.bib}
 
@@ -95,51 +107,61 @@
 %
 \thispagestyle{empty}
 
-\onehalfspacing
 
-\newgeometry{left=1cm,right=1cm}
+\newgeometry{left=1cm,right=1cm,top=2.5cm,bottom=2.5cm}
 
 \begin{center}
-\onehalfspacing
+\doublespacing
 
-\textbf{МИНИСТЕРСТВО ОБРАЗОВАНИЯ И НАУКИ РОССИЙСКОЙ ФЕДЕРАЦИИ}
+МИНИСТЕРСТВО ОБРАЗОВАНИЯ И НАУКИ РОССИЙСКОЙ ФЕДЕРАЦИИ
 
 НАЦИОНАЛЬНЫЙ ИССЛЕДОВАТЕЛЬСКИЙ ЯДЕРНЫЙ УНИВЕРСИТЕТ «МИФИ»
 
 ИНСТИТУТ ИНТЕЛЛЕКТУАЛЬНЫХ КИБЕРНЕТИЧЕСКИХ СИСТЕМ
-КАФЕДРА «КОМПЬЮТЕРНЫЕ СИСТЕМЫ И ТЕХНОЛОГИИ»\end{center}
+
+КАФЕДРА «КОМПЬЮТЕРНЫЕ СИСТЕМЫ И ТЕХНОЛОГИИ»
+\end{center}
 %\vfill
+
+\onehalfspacing
+
 \vspace{1cm}
 \begin{flushright}
 На правах рукописи\\
-УДК \useFRMfield{fcath}
+УДК \rule{27mm}{0.15mm}
 \end{flushright}
 
-
-\vfill
+\vspace{1cm}
 
 \begin{center}
+\doublespacing
 \large 
 ФАМИЛИЯ ИМЯ ОТЧЕСТВО\\
 
 Полное наименование НИР в соответствии с заданием\\
 
-ВЫПУСКНАЯ КВАЛИФИКАЦИОННАЯ РАБОТА МАГИСТРА
+Выпускная квалификационная работа магистра
 \end{center}
 
 \begin{center}
-Направление подготовки ---  \textbf{09.04.02 Информационные системы и технологии}\\
+Направление подготовки ---  09.04.02 Информационные системы и технологии\\
 \end{center}
 
-\vspace{1cm}
+\vspace{2cm}
 
 \begin{flushright}
+\begin{minipage}{60mm}
 Выпускная квалификационная\\
 работа защищена\\
-2018 г.\\
-Оценка \\
-Секретарь ГЭК
+<<\rule{10mm}{0.15mm}>>\rule{32mm}{0.15mm}2018 г.\\
+Оценка \rule{43mm}{0.15mm}\\
+Секретарь ГЭК \rule{27mm}{0.15mm}
+\end{minipage}
 \end{flushright}
+
+\vfill
+\vfill
+
 \begin{center}
 г. Москва\\
 2018
@@ -147,10 +169,74 @@
 
 \pagebreak
 
+%
+% вторая страница с подписями
+%
+\thispagestyle{empty}
+
+\begin{center}
+\doublespacing
+МИНИСТЕРСТВО ОБРАЗОВАНИЯ И НАУКИ РОССИЙСКОЙ ФЕДЕРАЦИИ
+
+НАЦИОНАЛЬНЫЙ ИССЛЕДОВАТЕЛЬСКИЙ ЯДЕРНЫЙ УНИВЕРСИТЕТ «МИФИ»
+
+ИНСТИТУТ ИНТЕЛЛЕКТУАЛЬНЫХ КИБЕРНЕТИЧЕСКИХ СИСТЕМ
+
+КАФЕДРА «КОМПЬЮТЕРНЫЕ СИСТЕМЫ И ТЕХНОЛОГИИ»
+
+Направление подготовки 09.04.02 – Информационные системы и технологии
+\end{center}
+
+\vspace{7mm}
+
+\begin{center}
+\textbf{ПОЯСНИТЕЛЬНАЯ ЗАПИСКА}
+
+\textbf{к выпускной квалификационной работе магистра}
+\end{center}
+
+\renewcommand{\arraystretch}{2}
+
+\begin{center}
+\begin{tabular}{p{25mm}p{130mm}}
+Тема: &  \useFRMfield{fldtheme} \\ 
+Магистр: & \useFRMfield{fldfullfio}[]  Группа \useFRMfield{fldgroup}[]  \\ 
+Руководитель: & \useFRMfield{flddolg}[] \\ 
+Консультант: & \useFRMfield{flddolg}[] \\ 
+Рецензент: & \useFRMfield{flddolg}[]  \\ 
+\end{tabular} 
+
+\end{center}
+ 
+\medskip
+
+% подписи
+\begin{center}
+\begin{tabular}{rp{60mm}p{60mm}}
+Магистр & \useFRMfield{fldsign}[]  & \useFRMfield{fldfio}[] \\ 
+Руководитель & \useFRMfield{fldsign}[]  & \useFRMfield{fldfio}[] \\ 
+Консультант &  \useFRMfield{fldsign}[]  & \useFRMfield{fldfio}[] \\ 
+Рецензент & \useFRMfield{fldsign}[]  & \useFRMfield{fldfio}[] \\ 
+\parbox[b]{27mm}{\singlespacing \rule{25mm}{0mm} Руководитель \rule{3mm}{0mm} программы магистратуры} & \useFRMfield{fldsign}[]  & \useFRMfield{fldfio}[] \\
+\end{tabular} 
+
+\end{center}
+
+\renewcommand{\arraystretch}{1}
+
 \vfill
 
+\begin{center}
+г. Москва\\
+2018
+\end{center}
 
 \pagebreak
+
+\restoregeometry
+
+\onehalfspacing
+
 
 % реферат
 \thispagestyle{empty}
@@ -195,15 +281,15 @@
 
 \section*{\centering ВВЕДЕНИЕ}
 \addcontentsline{toc}{section}{ВВЕДЕНИЕ}
-\input{intro} % текст введения в файле intro.tex
-\pagebreak
+%\input{intro} % текст введения в файле intro.tex
+%\pagebreak
 
 %\input{Post_zad}
-\pagebreak
-\input{part1}  % первая глава - в файле part1.tex
-\pagebreak
-\input{part2} % вторая глава - в файле part2.tex
-\pagebreak
+%\pagebreak
+%\input{part1}  % первая глава - в файле part1.tex
+%\pagebreak
+%\input{part2} % вторая глава - в файле part2.tex
+%\pagebreak
 
 % если есть еще разделы - сохраните их в соответствующих файлах и раскомментируйте строки ниже, при необходимости добавьте еще
 %\input{part3}  % третья глава - в файле part3.tex
@@ -228,7 +314,7 @@
 \addcontentsline{toc}{section}{СПИСОК ИСПОЛЬЗОВАННОЙ ЛИТЕРАТУРЫ}
 % ВАЖНО: для корректного отображения в списке литературы ссылок на англ.языке в bibtex-описание источника следует добавить поле 
 % langid = {english}
-\printbibliography
+%\printbibliography
 
 \pagebreak
 
