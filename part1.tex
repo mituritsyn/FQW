@@ -1,4 +1,3 @@
-% первая часть
 
 \section{Предметная область}
 
@@ -218,7 +217,7 @@ ROS-нода – это специальная программа (обычно 
 	\begin{MyCode}
 import rospy
 
-rospy.init_node('my_ros_node')  # имя ROS-ноды
+rospy.init\_node('my\_ros\_node')  # имя ROS-ноды
 
 rospy.spin()  # входим в бесконечный цикл...
 	\end{MyCode}
@@ -245,7 +244,7 @@ foo\_pub.publish(data='Hello, world!')  # публикуем сообщение
 def foo\_callback(msg):
 print msg.data
 
-# Подписываемся. При получении сообщения в топик /foo будет вызвана функция foo_callback.
+# Подписываемся. При получении сообщения в топик /foo будет вызвана функция foo\_callback.
 rospy.Subscriber('/foo', String, foo\_callback)
 	\end{MyCode}
 \end{Program}
@@ -267,21 +266,21 @@ from clover.srv import GetTelemetry
 
 # ...
 
-# Создаем обертку над сервисом get_telemetry пакета clover с типом GetTelemetry:
-get_telemetry = rospy.ServiceProxy('get_telemetry', srv.GetTelemetry)
+# Создаем обертку над сервисом get\_telemetry пакета clover с типом GetTelemetry:
+get\_telemetry = rospy.ServiceProxy('get\_telemetry', srv.GetTelemetry)
 
 # Вызываем сервис и получаем телеметрию квадрокоптера:
-telemetry = get_telemetry()
-С сервисами можно также работать при помощи утилиты rosservice. Так можно вызвать сервис /get_telemetry из командной строки:
+telemetry = get\_telemetry()
+С сервисами можно также работать при помощи утилиты rosservice. Так можно вызвать сервис /get\_telemetry из командной строки:
 
-rosservice call /get_telemetry "{frame_id: ''}"
+rosservice call /get\_telemetry "{frame\_id: ''}"
 	\end{MyCode}
 \end{Program}
 
 
 \subsection{MAVROS}
 \url{https://clover.coex.tech/ru/mavros.html}
-\url{https://dev.px4.io/master/en/ros/mavros_installation.html}
+\url{https://dev.px4.io/master/en/ros/mavros\_installation.html}
 
 MAVROS (MAVLink + ROS) — это пакет для ROS, предоставляющий возможность управлять беспилотниками по протоколу MAVLink. MAVROS поддерживает полетные стеки PX4 и APM. Связь организовывается по UART, USB, TCP или UDP.
 
