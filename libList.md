@@ -34,9 +34,14 @@ https://er.nau.edu.ua/bitstream/NAU/29433/1/TMekh_2016_1_8.pdf (мат. моде
 маврос
 
 
+
+\url{https://www.genebm.com/drone-bytes/software-design/middlewares-ros-fprime} часть обоснования выбора рос
+
+поменять lst1 где код
+
 реферат
-и чо
-и чо
+и что
+и что+
 не изучение а выбор
 добавление модуля маврос
 
