@@ -1,0 +1,38 @@
+No implementation found for style `biblatex'
+No implementation found for style `mathtext'
+No implementation found for style `fancyvrb'
+No implementation found for style `formular'
+No implementation found for style `setspace'
+No implementation found for style `geometry'
+No implementation found for style `misccorr'
+No implementation found for style `ccaption'
+No implementation found for style `caption'
+No implementation found for style `indentfirst'
+No implementation found for style `totcount'
+No implementation found for style `tocloft'
+No implementation found for style `cases'
+No implementation found for style `totalcount'
+
+redefining command \figurename 
+
+redefining command \tablename 
+
+redefining command \refname 
+
+redefining command \contentsname 
+
+no reference for citation: mathmodel
+
+no reference for citation: px4
+
+no reference for citation: qgroundcontrol
+
+no reference for citation: mavlink
+
+no reference for citation: ros
+
+no reference for citation: voltbro
+
+no reference for citation: ivp
+
+no reference for citation: minobr
