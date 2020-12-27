@@ -213,11 +213,7 @@ rospy.spin()  # входим в бесконечный цикл...
 	\begin{MyCode}
 from std\_msgs.msg import String
 
-# ...
-
 foo\_pub = rospy.Publisher('/foo', String, queue\_size=1)  # создаем Publisher'а
-
-# ...
 
 foo\_pub.publish(data='Hello, world!')  # публикуем сообщение
 Пример подписки на топик /foo:
@@ -245,14 +241,13 @@ rostopic echo /mavros/state
 	\begin{MyCode}
 from clover.srv import GetTelemetry
 
-# ...
-
 # Создаем обертку над сервисом get\_telemetry пакета clover с типом GetTelemetry:
 get\_telemetry = rospy.ServiceProxy('get\_telemetry', srv.GetTelemetry)
 
 # Вызываем сервис и получаем телеметрию квадрокоптера:
 telemetry = get\_telemetry()
-С сервисами можно также работать при помощи утилиты rosservice. Так можно вызвать сервис /get\_telemetry из командной строки:
+# С сервисами можно также работать при помощи утилиты rosservice.
+# Так можно вызвать сервис /get\_telemetry из командной строки:
 
 rosservice call /get\_telemetry "{frame\_id: ''}"
 	\end{MyCode}
