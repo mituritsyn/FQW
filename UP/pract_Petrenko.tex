@@ -1,0 +1,271 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[backend=biber,sorting=none,style=gost-numeric,autolang=other]{biblatex} % библиография
+\usepackage{mathtext} %русские буквы в формулах
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{amsmath}
+\usepackage{fancyvrb}
+\usepackage{formular}
+\usepackage{setspace} % управление междустрочными интервалами
+%поля документа
+\usepackage[left=3cm,right=1cm,top=2cm,bottom=2cm]{geometry}
+
+\usepackage{misccorr} % точки в конце номеров разделов, использовать перед пакетом ccaption!
+\usepackage{ccaption} % изменения подписей к рисункам и табл.
+
+\usepackage[nooneline]{caption} 
+\captionsetup[table]{justification=raggedright} % заголовок таблицы выравнивается влево
+\captionsetup[figure]{justification=centering,labelsep=endash} % заголовок рисунка - по центру
+% отступ перед первым абзацем
+\usepackage{indentfirst}
+%вставка изображений
+\usepackage{graphicx}
+% счетчики
+\usepackage{totcount}
+% управление содержанием
+\usepackage{tocloft}
+\usepackage[english,russian]{babel}
+% управление таблицами и рисунками
+\usepackage{float}
+% управление системами
+\usepackage{cases}
+\newcounter{mycitecount}                                %% Счётчик библиографии
+\AtEveryBibitem{\stepcounter{mycitecount}}              %% Работает для biblatex
+
+\usepackage[figure,      %
+            table,       %
+            mycitecount, xspace ]{totalcount}           %% Подсчёт общего количества объектов в документе
+
+% окружение для листингов - с нумерацией строк слева
+\DefineVerbatimEnvironment{MyCode}{Verbatim}{frame=lines,numbers=left,numberblanklines=false,framesep=5mm}
+
+% автоматическая нумерация листингов
+\newfloat{Program}{phb}{lop}
+\floatname{Program}{Листинг}
+\floatstyle{ruled}
+
+\setcounter{secnumdepth}{3} % глубина нумерации до подразделов
+
+%если нужны точки в оглавлении для разделов - раскомментируйте следующую команду
+%\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+
+\addto\captionsrussian{%
+\renewcommand{\figurename}{Рисунок}%
+\renewcommand{\tablename}{Таблица}%
+}
+
+% дефис в подписи к рисункам
+\captiondelim{ -- } 
+
+% Настройки для окружений с подчеркиваниями для подписей и пр.
+\setFRMfontencoding{T2A}
+\setFRMdfontencoding{T2A}
+% thanks to A.Starikov
+\setFRMfontfamily{cmr}
+\setFRMdfontfamily{ptm}
+\setFRMdfontsize{10pt}
+
+% задает длину поля для подписи на титульной странице
+\newFRMfield{xtitlesign}{32mm}
+
+% поле для факультета или кафедры
+\newFRMfield{fcath}{65mm}
+
+%имя файла с библиографией в формате BibTex
+\addbibresource{rbiblio.bib}
+
+% В соответствии с требованием: для списков использовать дефис
+\renewcommand{\labelitemi}{--}
+
+\begin{document}
+
+% счетчики страниц, рисунков, таблиц
+\regtotcounter{page}
+\regtotcounter{figure}
+\regtotcounter{table}
+
+\renewcommand{\refname}{\centerline{СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ}} 
+\renewcommand{\contentsname}{\centerline{СОДЕРЖАНИЕ}} 
+%\renewcommand{\refname}{Список источников}  % По умолчанию "Список литературы" (article)
+%\renewcommand{\bibname}{Литература}  % По умолчанию "Литература" (book и report)
+
+% титульная страница
+\thispagestyle{empty}
+\begin{center} \small
+\textbf{МИНИСТЕРСТВО НАУКИ И ВЫСШЕГО ОБРАЗОВАНИЯ РОССИЙСКОЙ ФЕДЕРАЦИИ}\\
+ФЕДЕРАЛЬНОЕ ГОСУДАРСТВЕННОЕ АВТОНОМНОЕ ОБРАЗОВАТЕЛЬНОЕ УЧРЕЖДЕНИЕ
+ВЫСШЕГО  ОБРАЗОВАНИЯ\\
+«Национальный исследовательский ядерный университет «МИФИ»\\
+\textbf{Обнинский институт атомной энергетики} – \\
+филиал федерального государственного автономного образовательного учреждения высшего\\
+образования «Национальный исследовательский ядерный университет «МИФИ»\\
+(ИАТЭ НИЯУ МИФИ)
+\end{center}
+%\vfill 
+\medskip
+
+\begin{center}
+\begin{tabular}{rl}
+Отделение & \useFRMfield{fcath}[\large Интеллектуальные кибернетические системы] \\ 
+Направление подготовки & \useFRMfield{fcath}[\large Информационные системы и технологии] \\ 
+\end{tabular} 
+\end{center}
+
+\vfill
+
+\large 
+
+\begin{center}
+	Производственная практика \\
+	(преддипломная практика)
+	
+	\medskip
+	
+	\textbf{\Large 
+		Разработка наземной системы позиционирования и навигации микродрона с применением компьютерного зрения
+	}
+	
+\end{center}
+
+\vspace{1cm}
+
+\begin{tabular*}{\textwidth}{lcr}
+Студент группы ИС-Б17 & \useFRMfield{xtitlesign} & Петренко В. Ю.\\
+& & \\
+Руководитель & & \\
+к.т.н., доцент каф. ИС & \useFRMfield{xtitlesign} & Мирзеабасов О. А.\\
+& & \\
+Научный консультант & & \\
+Рук. лаб. дронов ЦМИТ & \useFRMfield{xtitlesign} & Турицын М. И. \\
+& & \\
+\end{tabular*}
+
+
+\vfill
+\large
+
+\begin{center}
+Обнинск, 2021 г
+\end{center}
+
+\onehalfspacing
+
+\pagebreak
+
+% реферат
+\thispagestyle{empty}
+
+\section*{\centering РЕФЕРАТ}
+
+\thispagestyle{empty} % страница реферата не нумеруется
+
+% объем не больше страницы, подобие аннотации
+% возможно, кол-во источников придется вставлять вручную
+Работа \total{page} стр., \total{table} табл., \total{figure} рис. , \totalmycitecounts ист. 
+
+% КЛЮЧЕВЫЕ СЛОВА В ВЕРХНЕМ РЕГИСТРЕ
+БПЛА, КВАДРОКОПТЕР, РОБОТОТЕХНИКА, НАЗЕМНАЯ СТАНЦИЯ, ЦИФРОВОЕ ВИДЕОНАБЛЮДЕНИЕ, АНАЛОГОВОЕ ВИДЕОНАБЛЮДЕНИЕ
+
+Работа является частью проекта по созданию образовательного робототехнического комплекта, состоящего из дрона и наземной станции.
+
+Практическая часть посвящена выбору и реализации системы цифровой видеосвязи, сравнению полученной системы с аналоговой и полетным испытаниям.
+Суть работы заключается в изучении принципов и освоении функционирования цифровых видеосистем, их преимуществ и недостатков по сравнению с аналоговой версией, реализации и тестировании модулей цифровой видеосистемы и анализе характеристик полученного решения.
+
+В ранее проделанной научно-исследовательской работе был разработан набор экспериментальных образцов наземной станции и микродрона. Наземная станция способна производить преобразование видеосигнала с борта дрона в координаты его положения в пространстве.
+
+В ходе тестирования видеосистемы были выявлены недостатки аппаратной реализации приемо-передачи аналогового сигнала на компьютер, такие как задержка в 210мс и присутствие помех при наличии препятствия между приемником и передатчиком видеопотока, ввиду которых распознавание навигационных меток становилось затруднительным. 
+Такая задержка является критически высокой для успешного регулирования положения и делает выполнение автономного полета невозможным. 
+Основной причиной высокой задержки является специфика аппаратных устройств АЦП для аналогового видеосигнала.
+Доступные решения являются медленными, а разработка собственного не целесообразна в рамках данного проекта. Одним из решений проблемы -- использование цифровой видеосистемы.
+
+Предполагается, что использование цифровой передачи видеосигнала в наземной станции позволит уменьшить задержку, а также повысит качество изображения.
+
+
+
+\pagebreak
+\thispagestyle{empty}
+
+\section*{\centering ОПРЕДЕЛЕНИЯ}
+
+\thispagestyle{empty} % страница определений не нумеруется
+
+Квадрокоптер --- БПЛА мультироторного типа с четырьмя несущими винтами
+
+Пропорционально-интегрально-дифференциальный регулятор (ПИД) – алгоритм автоматического управления, применяемый для стабилизации дрона
+
+\pagebreak
+\thispagestyle{empty}
+
+\section*{\centering ОБОЗНАЧЕНИЯ И СОКРАЩЕНИЯ}
+
+НИР --- Научно-исследовательская работа
+
+БПЛА --- Беспилотный летательный аппарат
+
+ПАК --- Программно-аппаратный комплекс
+
+MAVLink -- Micro Air Vehicle Link
+
+ROS -- Robotic Operating System
+
+FPV -- First Person View
+
+OSD -- On Screen Display
+
+UART -- Universal asynchronous receiver/transmitter
+
+CSI -- Common System Interface
+
+DSI -- Display Serial Interface
+
+BEC -- Battery Eliminator Circuit
+
+ESR -- Equivalent Series Resistance
+
+AWG -- American Wire Gauge
+
+ПИД регулятор -- Пропорционально-интегрально-дифференциальный регулятор
+
+\pagebreak
+\thispagestyle{empty}
+% титульная страница - номер 1, остальные страницы до Содержания не нумеруются
+
+\tableofcontents
+\thispagestyle{empty}
+\pagebreak
+
+\section*{\centering ВВЕДЕНИЕ}
+\setcounter{page}{3}
+\addcontentsline{toc}{section}{ВВЕДЕНИЕ}
+\input{intro} % текст введения в файле intro.tex
+\pagebreak
+\pagebreak
+\input{part1}  % первая глава - в файле part1.tex
+\pagebreak
+\input{part2}  % вторая глава - в файле part2.tex
+\pagebreak
+\input{part3}  % третья глава - в файле part3.tex
+\pagebreak
+
+\section*{\centering ЗАКЛЮЧЕНИЕ}
+\addcontentsline{toc}{section}{ЗАКЛЮЧЕНИЕ}
+В ходе проведения практики были выполнены следующие задачи:
+\begin{itemize} 
+	\item чтото;
+	\item чтото.
+\end{itemize}
+
+Вывод
+
+\pagebreak
+
+\addcontentsline{toc}{section}{СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ}
+% ВАЖНО: для корректного отображения в списке литературы ссылок на англ.языке в bibtex-описание источника следует добавить поле 
+% langid = {english}
+\printbibliography
+
+\pagebreak
+
+\end{document}          
+
