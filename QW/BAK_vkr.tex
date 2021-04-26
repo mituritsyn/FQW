@@ -1,0 +1,331 @@
+%
+% Шаблон для ВКР бакалавра
+%
+
+\documentclass[a4paper,12pt]{article}
+\usepackage[backend=biber,sorting=none,style=gost-numeric,autolang=other]{biblatex} % библиография
+\usepackage{mathtext} %русские буквы в формулах
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{amsmath}
+\usepackage{fancyvrb}
+\usepackage{formular}
+\usepackage{setspace} % управление междустрочными интервалами
+%поля документа
+\usepackage[left=3cm,right=1cm,top=2cm,bottom=2cm]{geometry}
+
+\usepackage{misccorr} % точки в конце номеров разделов, использовать перед пакетом ccaption!
+\usepackage{ccaption} % изменения подписей к рисункам и табл.
+
+\usepackage[nooneline]{caption} 
+\captionsetup[table]{justification=raggedright} % заголовок таблицы выравнивается влево
+\captionsetup[figure]{justification=centering,labelsep=endash} % заголовок рисунка - по центру
+
+% отступ перед первым абзацем
+\usepackage{indentfirst}
+%вставка изображений
+\usepackage{graphicx}
+% счетчики
+\usepackage{totcount}
+% управление содержанием
+\usepackage{tocloft}
+% управление таблицами и рисунками
+\usepackage{float}
+
+\newcounter{mycitecount}                                %% Счётчик библиографии
+\AtEveryBibitem{\stepcounter{mycitecount}}              %% Работает для biblatex
+
+\usepackage[figure,      %
+            table,       %
+            mycitecount, xspace ]{totalcount}           %% Подсчёт общего количества объектов в документе
+
+% окружение для листингов - с нумерацией строк слева
+\DefineVerbatimEnvironment{MyCode}{Verbatim}{frame=lines,numbers=left,numberblanklines=false,framesep=5mm}
+
+% автоматическая нумерация листингов
+\newfloat{Program}{phb}{lop}
+\floatname{Program}{Листинг}
+\floatstyle{ruled}
+
+\captionsetup[Program]{justification=centering} % подпись к листингу - по центру
+
+\setlength{\parindent}{1.25cm} % абзацный отступ в соответствии с ГОСТ
+
+\setcounter{secnumdepth}{3} % глубина нумерации до подразделов
+
+%если нужны точки в оглавлении для разделов - раскомментируйте следующую команду
+%\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+
+\addto\captionsrussian{%
+\renewcommand{\figurename}{Рисунок}%
+\renewcommand{\tablename}{Таблица}%
+}
+
+% дефис в подписи к рисункам
+\captiondelim{ -- } 
+
+% Настройки для окружений с подчеркиваниями для подписей и пр.
+\setFRMfontencoding{T2A}
+\setFRMdfontencoding{T2A}
+% thanks to A.Starikov
+\setFRMfontfamily{cmr}
+\setFRMdfontfamily{ptm}
+\setFRMdfontsize{10pt}
+
+% задает длину поля для подписи на титульной странице
+\newFRMfield{xtitlesign}{32mm}
+
+% поле для факультета или кафедры
+\newFRMfield{fcath}{65mm}
+
+%имя файла с библиографией в формате BibTex
+\addbibresource{rbiblio.bib}
+
+% В соответствии с требованием: для списков использовать дефис
+\renewcommand{\labelitemi}{--}
+
+\begin{document}
+
+% счетчики страниц, рисунков, таблиц
+\regtotcounter{page}
+\regtotcounter{figure}
+\regtotcounter{table}
+
+\renewcommand{\refname}{\centerline{СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ}} 
+\renewcommand{\contentsname}{\centerline{СОДЕРЖАНИЕ}} 
+%\renewcommand{\refname}{Список источников}  % По умолчанию "Список литературы" (article)
+%\renewcommand{\bibname}{Литература}  % По умолчанию "Литература" (book и report)
+
+% титульная страница
+\thispagestyle{empty}
+\begin{center} \small
+\textbf{МИНИСТЕРСТВО НАУКИ И ВЫСШЕГО ОБРАЗОВАНИЯ\\ РОССИЙСКОЙ ФЕДЕРАЦИИ}\\
+ФЕДЕРАЛЬНОЕ ГОСУДАРСТВЕННОЕ АВТОНОМНОЕ ОБРАЗОВАТЕЛЬНОЕ УЧРЕЖДЕНИЕ
+ВЫСШЕГО  ОБРАЗОВАНИЯ\\
+«Национальный исследовательский ядерный университет «МИФИ»\\
+\textbf{Обнинский институт атомной энергетики} – \\
+филиал федерального государственного автономного образовательного учреждения высшего\\
+образования «Национальный исследовательский ядерный университет «МИФИ»\\
+(ИАТЭ НИЯУ МИФИ)
+\end{center}
+%\vfill
+\medskip
+
+% Направление подготовки следует уточнять,
+% магистры и бакалавры могут иметь разные наименования
+\begin{center}
+\begin{tabular}{rl}
+Отделение & \useFRMfield{fcath}[\large Интеллектуальные кибернетические системы] \\ 
+%Направление подготовки & \useFRMfield{fcath}[\large Информационные системы и технологии] \\ 
+\end{tabular} 
+\end{center}
+
+\vfill
+
+\large 
+
+\begin{center}
+\textbf{\Large Выпускная квалификационная работа --- } \\
+\textbf{\Large бакалаврская работа}\\
+	
+	\medskip
+
+{ \normalsize
+по направлению подготовки  \textbf{09.03.02 Информационные  системы и технологии}\\
+
+Направленность (профиль) \textbf{Информационные технологии}
+}	
+\vfill
+\vfill
+\medskip
+
+\textbf{\Large 
+		Разработка наземной системы позиционирования и навигации микродрона с применением компьютерного зрения
+	}
+	
+\end{center}
+
+\vspace{1cm}
+
+\begin{tabular*}{\textwidth}{p{78mm}p{33mm}p{64mm}}
+	Выполнил:\\студент гр. ИС-Б17 & \useFRMfield{xtitlesign} & Петренко В. Ю.\\
+	& & \\
+	Руководитель ВКР,\\к.т.н., доцент каф. ИС & \useFRMfield{xtitlesign} & Мирзеабасов О. А. \\
+	& & \\
+	
+	Нормоконтроль & \useFRMfield{xtitlesign} & Пичугина~И.А. \\
+	& & \\
+	% Если нужно добавить консультанта - раскомментируйте две строчки ниже
+	Консультант ВКР бакалавра\\Рук. лаб. дронов ЦМИТ  & \useFRMfield{xtitlesign} & Турицын М. И.\\
+	%& & \\
+	Рецензент\\рук. спорт. к. FPVDudes   & \useFRMfield{xtitlesign} & Бахвалов А.\\
+	
+	& & \\
+	Выпускная квалификационная \\ работа допущена к защите & \useFRMfield{xtitlesign} &  \\
+	& & \\
+	Руководитель\\ образовательной программы \\
+	09.03.02 Информационные системы и технологии\\
+	канд. тех. наук  & \useFRMfield{xtitlesign} &Мирзеабасов~О.А. \\
+	
+\end{tabular*}
+
+
+\vfill
+\large
+
+\begin{center}
+Обнинск, 2021 г
+\end{center}
+
+\onehalfspacing
+
+\pagebreak
+
+% реферат
+\thispagestyle{empty}
+
+\section*{\centering РЕФЕРАТ}
+
+\thispagestyle{empty} % страница реферата не нумеруется
+
+Работа \total{page} стр., \total{table} табл., \total{figure} рис., \totalmycitecounts ист. 
+
+БПЛА, КВАДРОКОПТЕР, РОБОТОТЕХНИКА, НАЗЕМНАЯ СТАНЦИЯ, КОМПЬЮТЕРНОЕ ЗРЕНИЕ, АВТОНОМНЫЙ ПОЛЕТ
+
+Работа посвящена разработке экспериментального образца наземной станции и микродрона, а также выбору их протокола общения.
+Суть работы заключается в модификации и доработке существующих робототехнических решений на основе БПЛА посредством выноса бортового компьютера в наземную станцию, благодаря чему станет возможно уменьшение размеров и стоимости квадрокоптера.
+Наземная станция представляет собой совокупность компьютера и радиомодулей для получения и последующей обработки изображения с квадрокоптера. Результаты обработки отправляются по радио на борт квадрокоптера в виде управляющих сигналов.
+Таким образом, квадрокоптер получает дополнительную систему координат без использования датчиков подобных GPS, а также возможность навигации с использованием компьютерного зрения.
+% определяет свое место в пространстве 
+
+Разработанный ПАК дает возможность создать образовательный робототехнический комплект на основе беспилотника. Вынося бортовой компьютер в наземную станцию, получаем такие преимущества, как безопасность, низкая стоимость, в том числе существенно удешевляется ремонт.
+
+\pagebreak
+\thispagestyle{empty}
+
+\section*{\centering ОПРЕДЕЛЕНИЯ}
+
+\thispagestyle{empty} % страница определений не нумеруется
+
+Квадрокоптер --- БПЛА мультироторного типа с четырьмя несущими винтами
+
+Бод-рейт -- скорость передачи данных через UART
+
+Пропорционально-интегрально-дифференциальный регулятор (ПИД) – алгоритм автоматического управления, применяемый для стабилизации дрона
+
+\pagebreak
+\thispagestyle{empty}
+
+\section*{\centering ОБОЗНАЧЕНИЯ И СОКРАЩЕНИЯ}
+
+НИР --- Научно-исследовательская работа
+
+БПЛА --- Беспилотный летательный аппарат
+
+ПАК --- Программно-аппаратный комплекс
+
+MAVLink -- Micro Air Vehicle Link
+
+ROS -- Robotic Operating System
+
+ВМГ -- Винто-моторная группа
+
+FPV -- First Person View
+
+OSD -- On Screen Display
+
+UART -- Universal asynchronous receiver/transmitter
+
+CSI -- Common System Interface
+
+DSI -- Display Serial Interface
+
+BEC -- Battery Eliminator Circuit
+
+ESR -- Equivalent Series Resistance
+
+AWG -- American Wire Gauge
+
+ПИД регулятор -- Пропорционально-интегрально-дифференциальный регулятор
+
+
+\pagebreak
+\thispagestyle{empty}
+
+\tableofcontents
+\thispagestyle{empty} % страница реферата не нумеруется
+\pagebreak
+
+\section*{\centering ВВЕДЕНИЕ}
+\setcounter{page}{3}
+\addcontentsline{toc}{section}{ВВЕДЕНИЕ}
+\input{intro} % текст введения в файле intro.tex
+\pagebreak
+
+%\input{Post_zad}
+\pagebreak
+\input{part1}  % первая глава - в файле part1.tex
+\pagebreak
+\input{part2} % вторая глава - в файле part2.tex
+\pagebreak
+\input{part3}  % третья глава - в файле part3.tex
+\pagebreak
+\input{part4} % четвертая глава - в файле part4.tex
+\pagebreak
+\input{part5}  % пятая глава - в файле part5.tex
+\pagebreak
+
+\section*{\centering ЗАКЛЮЧЕНИЕ}
+\addcontentsline{toc}{section}{ЗАКЛЮЧЕНИЕ}
+
+В ходе проделанной работы была проведена --- описать результаты бурной деятельности по выполнению ВКР, разумно в виде списка выполненных задач.
+
+Разработанная программа позволяет --- перечислить основные функциональные характеристики и особенности, можно в виде списка:
+\begin{itemize}
+\item выполнено такое-то задание;
+\item разработана некоторая система;
+\item у работы есть перспективы развития.
+\end{itemize}
+
+% оформление библиографии - вариант с БД
+\pagebreak
+
+\addcontentsline{toc}{section}{СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ}
+% ВАЖНО: для корректного отображения в списке литературы ссылок на англ.языке в bibtex-описание источника следует добавить поле 
+% langid = {english}
+\printbibliography
+
+\pagebreak
+
+\section*{ \centering Приложение А} 
+\addcontentsline{toc}{section}{Приложение А}
+
+\begin{center}
+Листинг 1 -- Часть кода реализации класса \verb|HashMapValue|
+\end{center}
+
+
+\begin{MyCode}
+
+public class HashMapValue {
+	
+	protected String filename; 
+	protected HashMap<String, String> hashValue = 
+	new HashMap<>();
+	protected HashMap<String, Boolean> hashKeysFlag =
+	 new HashMap<>();
+	
+	public void setData(String key, String value) {
+		hashValue.put(key, value);
+	}
+	
+	public String getData(String key) {
+		return hashValue.get(key);
+	}
+    /* ... */
+}
+\end{MyCode}
+
+\end{document}          
+
