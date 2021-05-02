@@ -95,6 +95,8 @@ $ raspivid -t 0 -h 720 -w 1080 -fps 25 -hf -b 2000000 -o - | gst-launch-1.0 -v f
 На ПК: 
 $ gst-launch-1.0 -v tcpclientsrc host=192.168.1.148 port=5000  ! gdpdepay !  rtph264depay ! avdec_h264 ! videoconvert ! autovideosink sync=false
 
+https://platypus-boats.readthedocs.io/en/latest/source/rpi/video/video-streaming-gstreamer.html
+
 https://pi.gbaman.info/?p=150
 \end{MyCode}
 
@@ -110,8 +112,32 @@ $ gst-launch-1.0 rpicamsrc bitrate=1000000 ! 'video/x-h264,width=640,height=480'
 https://www.raspberrypi.org/forums/viewtopic.php?t=196176
 \end{MyCode}
 
-На малине собрали через мейк rpicamsrc,
-запустили gst-launch-1.0 -v rpicamsrc bitrate=10000000 rotation=180 exposure-mode=10 awb-mode=0 awb-gain-red=1 awb-gain-blue=2 iso=800 shutter-speed=10000 contrast=50 ! "image/jpeg,width=640,height=480,framerate=30/1" ! udpsink host=192.168.1.148 port=9000
-
+\begin{MyCode}
+На raspberry собрали через make rpicamsrc,
+запустили 
+$ gst-launch-1.0 -v rpicamsrc bitrate=10000000 rotation=180 exposure-mode=10 awb-mode=0 awb-gain-red=1 awb-gain-blue=2 iso=800 shutter-speed=10000 contrast=50 ! "image/jpeg,width=640,height=480,framerate=30/1" ! udpsink host=192.168.1.148 port=9000
+\end{MyCode}
 
 Собрали через каткин драйвер gscam, запустили roscore, осталось изменить лаунч и получить поток.
+Для создания топиков необхходимо настроить маврос.
+
+/opt/ros/melodic/share/mavros/launch/apm.launch
+
+on apm.launch change the fcu_url to communicate with telemetry port on FC via ser2net proxy (see above)
+<arg name="fcu_url" default="tcp://192.168.10.16:2000" />
+
+$ cd ~/catkin_ws/src
+$ git clone https://github.com/jokla/aruco_gridboard.git
+$ cd ..
+$ catkin_make
+$ source devel/setup.bash
+catkin_make --only-pkg-with-deps <target_package>
+
+https://code.google.com/archive/p/brown-ros-pkg/wikis/Quick_start_rosbridge_and_ROS.wiki
+
+https://discuss.cubepilot.org/t/indoor-autonomous-flight-with-cube-ros-and-aruco-board-ongoing/351/8
+
+
+https://docs.opencv.org/master/db/da9/tutorial_aruco_board_detection.html
+https://diydrones.com/group/voltarobots/forum/connect-telemetry-through-tcp-udp?commentId=7447824%3AComment%3A1590641
+https://stackoverflow.com/questions/7669240/webcam-streaming-using-gstreamer-over-udp

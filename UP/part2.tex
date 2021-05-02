@@ -2,4 +2,24 @@
 
 \section{p2}
 
-\subsection{Основные сведения}
+\subsection{Запуск веб топика на виртуалке}
+собираем пакет gscam 
+git clone https://github.com/ros-drivers/gscam
+сборка:
+CMake flag -DGSTREAMER_VERSION_1_x=On
+
+$ source ~/catkin-ws/devel/setup.bash
+В одной вкладке $ roscore (если не запущен)
+
+в roscd gscam $ export GSCAM_CONFIG="udpsrc port=5000 ! gdpdepay ! rtph264depay ! avdec_h264 ! videoconvert"
+$ rosrun gscam gscam
+
+На rpi: gst-launch-1.0 rpicamsrc bitrate=1000000 ! 'video/x-h264,width=640,height=480' ! h264parse ! queue ! rtph264pay config-interval=1 pt=96 ! gdppay ! udpsink host=192.168.1.53 port=5000
+где =192.168.1.53 - ip ПК
+
+На ПК: $ rosrun web_video_server web_video_server _port:=11315
+
+НА localhost:11315 появляется топик image_raw.
+Задержка ~200мс, для уменьшения необходимо сменить кодек на *jpeg*
+
+Для проверки на clover необходимо изменить источник в $ nano launch/main_camera.launch
