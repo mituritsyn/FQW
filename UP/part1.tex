@@ -26,9 +26,9 @@ VISO_TYPE 0
 
 http://www.pcds.fi/downloads/operatingsystem/debianbased/raspbian/archive/stretch/raspbian.stretch.html
 \begin{MyCode}
-$ unzip -p 2018-11-13-raspbian-stretch-lite.zip
-$ sudo dd if=/home/qw/2018-11-13-raspbian-stretch-lite.img bs=4M of=/dev/sdd conv=fsync
-$ sync
+\$ unzip -p 2018-11-13-raspbian-stretch-lite.zip
+\$ sudo dd if=/home/qw/2018-11-13-raspbian-stretch-lite.img bs=4M of=/dev/sdd conv=fsync
+\$ sync
 \end{MyCode}
 
 \begin{MyCode}
@@ -46,16 +46,16 @@ network={
 Подключаем клавиатуру и монитор к  Raspberry через переходники, логинимся через pi/raspberry.
 Поднимаем ssh :
 \begin{MyCode}
-$ sudo systemctl enable ssh
-$ sudo systemctl start ssh
+\$ sudo systemctl enable ssh
+\$ sudo systemctl start ssh
 Перезагружаем Raspberry.
 Это можно не делать, если создать в /boot файл ssh:
-$ sudo touch /boot/ssh
-$ reboot
+\$ sudo touch /boot/ssh
+\$ reboot
 \end{MyCode}
 Подключаем малинку, даем минуты 2 на размышления и прогоняем на ПК тулзой nmap, какие устройства к роутеру подключены
 \begin{MyCode}
-$ sudo nmap -sn 192.168.1.0/24
+\$ sudo nmap -sn 192.168.1.0/24
 Находим
 Nmap scan report for 192.168.1.148
 Host is up (-0.062s latency).
@@ -69,45 +69,47 @@ Nmap done: 256 IP addresses (4 hosts up) scanned in 4.42 seconds
 
 \begin{MyCode}
 	Доставила пакеты:
-	gstreamer1.0 (installed with apt)
+	gstreamer1.0 
 	gstreamer1.0-plugins-good (иначе ошибка при старте стрима WARNING: erroneous pipeline: no element "rtspsrc")
-	gst-rpicamsrc (https://github.com/thaytan/gst-rpicamsrc 27) to use rpicamsrc as source for gst-launch-1.0
-	ser2net (installed with apt) a serial to network proxy
-	in /etc/ser2net.conf add line:
+	
+	ser2net, после установки необходимо изменить конфиг:
+	/etc/ser2net.conf
 	2000:raw:0:/dev/ttyAMA0:115200 8DATABITS NONE 1STOPBIT
+	
+	Склонировала: gst-rpicamsrc (https://github.com/thaytan/gst-rpicamsrc 27) to use rpicamsrc as source for gst-launch-1.0
 \end{MyCode}
-https://discuss.ardupilot.org/t/indoor-autonomous-flight-with-arducopter-ros-and-aruco-boards-detection/34699/34
+%https://discuss.ardupilot.org/t/indoor-autonomous-flight-with-arducopter-ros-and-aruco-boards-detection/34699/34
 
-https://www.raspberrypi.org/documentation/remote-access/ip-address.md
+%https://www.raspberrypi.org/documentation/remote-access/ip-address.md
 
-https://habr.com/ru/post/419947/
+%https://habr.com/ru/post/419947/
 
 Информация о камере:
 \begin{MyCode}
-$ v4l2-ctl --list-formats-ext -d /dev/video0
+\$ v4l2-ctl --list-formats-ext -d /dev/video0
 \end{MyCode}
 
 Работают, но с задержкой 600мс:
 \begin{MyCode}
 На rasbberry:
-$ raspivid -t 0 -h 720 -w 1080 -fps 25 -hf -b 2000000 -o - | gst-launch-1.0 -v fdsrc ! h264parse !  rtph264pay config-interval=1 pt=96 ! gdppay ! tcpserversink host=192.168.1.148 port=5000 
+\$ raspivid -t 0 -h 720 -w 1080 -fps 25 -hf -b 2000000 -o - | gst-launch-1.0 -v fdsrc ! h264parse !  rtph264pay config-interval=1 pt=96 ! gdppay ! tcpserversink host=192.168.1.148 port=5000 
 
 На ПК: 
-$ gst-launch-1.0 -v tcpclientsrc host=192.168.1.148 port=5000  ! gdpdepay !  rtph264depay ! avdec_h264 ! videoconvert ! autovideosink sync=false
+\$ gst-launch-1.0 -v tcpclientsrc host=192.168.1.148 port=5000  ! gdpdepay !  rtph264depay ! avdec_h264 ! videoconvert ! autovideosink sync=false
 
-https://platypus-boats.readthedocs.io/en/latest/source/rpi/video/video-streaming-gstreamer.html
+%https://platypus-boats.readthedocs.io/en/latest/source/rpi/video/video-streaming-gstreamer.html
 
-https://pi.gbaman.info/?p=150
+%https://pi.gbaman.info/?p=150
 \end{MyCode}
 
 Уменьшили задержку с помощью передачи udp пакетов. Теперь она 150мс:
 Нужна установка gstreamer1.0-tools;
 \begin{MyCode}
 На ПК запускается:
-$ gst-launch-1.0 udpsrc port=5000 ! gdpdepay ! rtph264depay ! avdec_h264 ! videoconvert ! autovideosink sync=false
+\$ gst-launch-1.0 udpsrc port=5000 ! gdpdepay ! rtph264depay ! avdec_h264 ! videoconvert ! autovideosink sync=false
 
 На Raspberry:
-$ gst-launch-1.0 rpicamsrc bitrate=1000000 ! 'video/x-h264,width=640,height=480' ! h264parse ! queue ! rtph264pay config-interval=1 pt=96 ! gdppay ! udpsink host=[IP ПК] port=5000
+\$ gst-launch-1.0 rpicamsrc bitrate=1000000 ! 'video/x-h264,width=640,height=480' ! h264parse ! queue ! rtph264pay config-interval=1 pt=96 ! gdppay ! udpsink host=[IP ПК] port=5000
 
 https://www.raspberrypi.org/forums/viewtopic.php?t=196176
 \end{MyCode}
@@ -115,29 +117,38 @@ https://www.raspberrypi.org/forums/viewtopic.php?t=196176
 \begin{MyCode}
 На raspberry собрали через make rpicamsrc,
 запустили 
-$ gst-launch-1.0 -v rpicamsrc bitrate=10000000 rotation=180 exposure-mode=10 awb-mode=0 awb-gain-red=1 awb-gain-blue=2 iso=800 shutter-speed=10000 contrast=50 ! "image/jpeg,width=640,height=480,framerate=30/1" ! udpsink host=192.168.1.148 port=9000
+\$ gst-launch-1.0 -v rpicamsrc bitrate=10000000 rotation=180 exposure-mode=10 awb-mode=0 awb-gain-red=1 awb-gain-blue=2 iso=800 shutter-speed=10000 contrast=50 ! "image/jpeg,width=640,height=480,framerate=30/1" ! udpsink host=192.168.1.148 port=9000
 \end{MyCode}
 
 Собрали через каткин драйвер gscam, запустили roscore, осталось изменить лаунч и получить поток.
 Для создания топиков необхходимо настроить маврос.
 
-/opt/ros/melodic/share/mavros/launch/apm.launch
+В /opt/ros/melodic/share/mavros/launch/apm.launch меняется параметр fcu\_url для общения с телеметрией по порту полетника с помощью ser2net proxy:
+<arg name="fcu\_url" default="tcp://192.168.10.16:2000" />
 
-on apm.launch change the fcu_url to communicate with telemetry port on FC via ser2net proxy (see above)
-<arg name="fcu_url" default="tcp://192.168.10.16:2000" />
+\$ cd ~/catkin\_ws/src
+\$ git clone https://github.com/jokla/aruco\_gridboard.git
+\$ cd ..
+\$ catkin\_make
+\$ source devel/setup.bash
+catkin\_make --only-pkg-with-deps <target\_package>
 
-$ cd ~/catkin_ws/src
-$ git clone https://github.com/jokla/aruco_gridboard.git
-$ cd ..
-$ catkin_make
-$ source devel/setup.bash
-catkin_make --only-pkg-with-deps <target_package>
+%https://code.google.com/archive/p/brown-ros-pkg/wikis/Quick_start_rosbridge_and_ROS.wiki
 
-https://code.google.com/archive/p/brown-ros-pkg/wikis/Quick_start_rosbridge_and_ROS.wiki
-
-https://discuss.cubepilot.org/t/indoor-autonomous-flight-with-cube-ros-and-aruco-board-ongoing/351/8
+%https://discuss.cubepilot.org/t/indoor-autonomous-flight-with-cube-ros-and-aruco-board-ongoing/351/8
 
 
-https://docs.opencv.org/master/db/da9/tutorial_aruco_board_detection.html
-https://diydrones.com/group/voltarobots/forum/connect-telemetry-through-tcp-udp?commentId=7447824%3AComment%3A1590641
-https://stackoverflow.com/questions/7669240/webcam-streaming-using-gstreamer-over-udp
+%https://docs.opencv.org/master/db/da9/tutorial_aruco_board_detection.html
+%https://diydrones.com/group/voltarobots/forum/connect-telemetry-through-tcp-udp?commentId=7447824%3AComment%3A1590641
+%https://stackoverflow.com/questions/7669240/webcam-streaming-using-gstreamer-over-udp
+
+
+Для использования аппаратного кодирования:
+PC(autovideosink sync=false not needed for gscam):
+gst-launch-1.0 udpsrc port=5000 ! gdpdepay ! rtph264depay ! avdec\_h264 ! videoconvert ! autovideosink sync=false
+
+RPI stream:
+gst-launch-1.0 rpicamsrc bitrate=1000000 ! "video/x-raw,width=640,height=480,framerate=30/1" ! \
+omxh264enc target-bitrate=1000000 control-rate=variable ! \
+'video/x-h264,width=640,height=480'! h264parse ! queue ! \
+rtph264pay config-interval=1 pt=96 ! gdppay ! udpsink host=192.168.1.253 port=5000

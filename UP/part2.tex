@@ -6,7 +6,7 @@
 собираем пакет gscam 
 git clone https://github.com/ros-drivers/gscam
 сборка:
-CMake flag -DGSTREAMER_VERSION_1_x=On
+cmake -DGSTREAMER_VERSION_1_x=On
 
 $ source ~/catkin-ws/devel/setup.bash
 В одной вкладке $ roscore (если не запущен)
@@ -19,7 +19,7 @@ $ rosrun gscam gscam
 
 На ПК: $ rosrun web_video_server web_video_server _port:=11315
 
-НА localhost:11315 появляется топик image_raw.
+На localhost:11315 появляется топик image_raw.
 Задержка ~200мс, для уменьшения необходимо сменить кодек на *jpeg*
 
-Для проверки на clover необходимо изменить источник в $ nano launch/main_camera.launch
+Для взаимодействия с clover необходимо изменить источник камеры в $ nano launch/main_camera.launch
