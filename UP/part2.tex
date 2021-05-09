@@ -23,3 +23,27 @@ $ rosrun gscam gscam
 Задержка ~200мс, для уменьшения необходимо сменить кодек на *jpeg*
 
 Для взаимодействия с clover необходимо изменить источник камеры в $ nano launch/main_camera.launch
+
+\subsection{Запуск aruco\_gridboard}
+tab-1 (запуск нод gscam и aruco\_gridboard по полученному топику): 
+export GSCAM_CONFIG="udpsrc port=5000 ! gdpdepay ! rtph264depay ! avdec_h264 ! videoconvert"
+roslaunch aruco_gridboard detection_rpicam.launch
+
+tab-2 (запуск окружения маврос): roslaunch mavros apm.launch
+
+tab-3 (The messages SET_GPS_GLOBAL_ORIGIN and a SET_HOME_POSITION are sent with a script before starting to use the system.): rosrun aruco_gridboard set_origin.py
+
+tab-4 (запуск rviz на усмотрение): rosrun rviz rviz -d catkin_ws/src/aruco_gridboard/data/aruco_grid.rviz
+
+tab-5 (отсебятина для просмотра чистой картинки):rosrun web_video_server web_video_server _port:=11315
+
+запуск rpi
+gst-launch-1.0 rpicamsrc bitrate=1000000 ! 'video/x-h264,width=640,height=480' ! h264parse ! queue ! rtph264pay config-interval=1 pt=96 ! gdppay ! udpsink host=192.168.1.53 port=5000
+
+для задержки в 80мс на пк:\\
+clever@clever-dev: gst-launch-1.0 udpsrc port=5000 ! "image/jpeg,width=640,height=480,framerate=30/1" ! jpegdec ! videoconvert ! autovideosink sync=false
+
+на рпи:
+gst-launch-1.0 rpicamsrc bitrate=10000000 iso=800 shutter-speed=10000 contrast=50 ! "image/jpeg,width=640,height=480,framerate=30/1" ! udpsink host=192.168.1.53 port=5000
+
+export GSCAM_CONFIG="udpsrc port=5000 ! "image/jpeg,width=640,height=480,framerate=30/1" ! jpegdec ! videoconvert ! autovideosink sync=false"

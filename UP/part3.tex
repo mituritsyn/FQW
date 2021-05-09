@@ -74,6 +74,12 @@ gscam получает стрим и публикует 2 топика: camera/i
 /vision/status
 \subsection{v4l2sink}
 %https://gstreamer.freedesktop.org/documentation/video4linux2/v4l2sink.html
+qw@ikherty:~/docs$  cd /home/qw
+qw@ikherty:~$ git clone https://github.com/umlaeute/v4l2loopback
+qw@ikherty:~$ cd v4l2loopback/
+qw@ikherty:~/v4l2loopback$ make
+qw@ikherty:~/v4l2loopback$ sudo make install
+
 \subsection{как это работает}
 The video is streamed from Raspberry Pi with gstreamer and, on the PC, the node gscam get this stream and publish camera/image\_raw and camera/camera\_info topics.
 On the PC aruco\_gridboard (slightly modified by me) subscribe to the above topics and publish a camera\_pose message to the mavros/vision\_pose/pose topic.
