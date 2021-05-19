@@ -1,49 +1,102 @@
-% вторая часть
+\section{Глава 2. Конфигурация дрона для обнаружения местоположения}
 
-\section{p2}
+%\https://discuss.ardupilot.org/t/indoor-autonomous-flight-with-arducopter-ros-and-aruco-boards-detection/34699
 
-\subsection{Запуск веб топика на виртуалке}
-собираем пакет gscam 
-git clone https://github.com/ros-drivers/gscam
-сборка:
-cmake -DGSTREAMER_VERSION_1_x=On
+\subsection{Настройка ardupilot}
+Прошила через qgroundcontrol на pixracer r15 ardupilot, произвела первоначальную настройку-выбрала тип рамы, откалибровала датчики.
+Указала следующие параметры:
+\begin{MyCode}
+AHRS_EKF_TYPE 2
+EKF2_ENABLE 1
+EKF3_ENABLE 0
+EK2_GPS_TYPE 3
+EK2_POSNE_M_NSE 0.1
+EK2_EXTNAV_DELAY 80
+GPS_TYPE 0
+COMPASS_USE 0
+VISO_TYPE 0
+\end{MyCode}
 
-$ source ~/catkin-ws/devel/setup.bash
-В одной вкладке $ roscore (если не запущен)
+\subsection{Настройка Raspberry Pi zero w}
 
-в roscd gscam $ export GSCAM_CONFIG="udpsrc port=5000 ! gdpdepay ! rtph264depay ! avdec_h264 ! videoconvert"
-$ rosrun gscam gscam
+Для микрокомпьютера выбрана операционная система raspbian stretch lite.
+%http://www.pcds.fi/downloads/operatingsystem/debianbased/raspbian/archive/stretch/raspbian.stretch.html
+С помощью команд, представленных на листинге 1, записала образ на карту памяти микрокомпьютера.
+\begin{MyCode}
+\$ unzip -p 2018-11-13-raspbian-stretch-lite.zip
+\$ sudo dd if=/home/qw/2018-11-13-raspbian-stretch-lite.img bs=4M of=/dev/sdd conv=fsync
+\$ sync
+\end{MyCode}
+Для подключения к роутеру изменила параметры wpa_supplicant.conf.
+\begin{MyCode}
+\$ less /etc/wpa_supplicant/wpa_supplicant.conf
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+country=RU
 
-На rpi: gst-launch-1.0 rpicamsrc bitrate=1000000 ! 'video/x-h264,width=640,height=480' ! h264parse ! queue ! rtph264pay config-interval=1 pt=96 ! gdppay ! udpsink host=192.168.1.53 port=5000
-где =192.168.1.53 - ip ПК
+network={
+	ssid="ИМЯ_ТОЧКИ_ДОСТУПА"
+	psk=123456789
+}
+\end{MyCode}
+%https://habr.com/ru/post/419947/
+Для возможности удаленного подключения создан файл ssh в каталоге /boot.
 
-На ПК: $ rosrun web_video_server web_video_server _port:=11315
+После изменений перезагружается система и с помощью утилиты nmap на компьютере проверяются все подключения к роутеру:
+\begin{MyCode}
+\$ sudo nmap -sn 192.168.1.0/24
+...
+Nmap scan report for 192.168.1.148
+Host is up (-0.062s latency).
+MAC Address: B8:27:EB:D3:B7:09 (Raspberry Pi Foundation)
+Nmap scan report for ikherty (192.168.1.28)
+Host is up.
+Nmap done: 256 IP addresses (4 hosts up) scanned in 4.42 seconds
+...
+\end{MyCode}
+192.168.1.148-адрес Raspberry.
+%https://www.raspberrypi.org/documentation/remote-access/ip-address.md
+Для возможности запускать трансляцию видео с борта дрона необходимо установить следующие пакеты:
+\begin{MyCode}
+	gstreamer1.0
+	gstreamer1.0-tools
+	gstreamer1.0-plugins-good
+	ser2net, после установки необходимо изменить /etc/ser2net.conf, добавив в конце строку, определяющую, как будет полетный контроллер общаться с микрокомпьютером
+	2000:raw:0:/dev/ttyAMA0:115200 8DATABITS NONE 1STOPBIT
+	и собрать gst-rpicamsrc из репозитория (https://github.com/thaytan/gst-rpicamsrc) с помощью команд make, make install; он необходим для использования rpi-камеры в качестве источника видеопотока во время трансляции.
+\end{MyCode}
+%https://discuss.ardupilot.org/t/indoor-autonomous-flight-with-arducopter-ros-and-aruco-boards-detection/34699/34
 
-На localhost:11315 появляется топик image_raw.
-Задержка ~200мс, для уменьшения необходимо сменить кодек на *jpeg*
+Информация о камере:
+\begin{MyCode}
+\$ v4l2-ctl --list-formats-ext -d /dev/video0
+\end{MyCode}
+%https://platypus-boats.readthedocs.io/en/latest/source/rpi/video/video-streaming-gstreamer.html
 
-Для взаимодействия с clover необходимо изменить источник камеры в $ nano launch/main_camera.launch
+Уменьшили задержку с помощью передачи udp пакетов. Теперь она 150мс:
+\begin{MyCode}
+На ПК запускается:
+\$ gst-launch-1.0 udpsrc port=5000 ! gdpdepay ! rtph264depay ! avdec_h264 ! videoconvert ! autovideosink sync=false
 
-\subsection{Запуск aruco\_gridboard}
-tab-1 (запуск нод gscam и aruco\_gridboard по полученному топику): 
-export GSCAM_CONFIG="udpsrc port=5000 ! gdpdepay ! rtph264depay ! avdec_h264 ! videoconvert"
-roslaunch aruco_gridboard detection_rpicam.launch
+На Raspberry:
+\$ gst-launch-1.0 rpicamsrc bitrate=1000000 ! 'video/x-h264,width=640,height=480' ! h264parse ! queue ! rtph264pay config-interval=1 pt=96 ! gdppay ! udpsink host=[IP ПК] port=5000
+%\$ gst-launch-1.0 -v rpicamsrc bitrate=10000000 rotation=180 exposure-mode=10 awb-mode=0 awb-gain-red=1 awb-gain-blue=2 iso=800 shutter-speed=10000 contrast=50 ! "image/jpeg,width=640,height=480,framerate=30/1" ! udpsink host=192.168.1.148 port=9000
+%https://www.raspberrypi.org/forums/viewtopic.php?t=196176
+\end{MyCode}
 
-tab-2 (запуск окружения маврос): roslaunch mavros apm.launch
 
-tab-3 (The messages SET_GPS_GLOBAL_ORIGIN and a SET_HOME_POSITION are sent with a script before starting to use the system.): rosrun aruco_gridboard set_origin.py
+%https://docs.opencv.org/master/db/da9/tutorial_aruco_board_detection.html
+%https://diydrones.com/group/voltarobots/forum/connect-telemetry-through-tcp-udp?commentId=7447824%3AComment%3A1590641
+%https://stackoverflow.com/questions/7669240/webcam-streaming-using-gstreamer-over-udp
 
-tab-4 (запуск rviz на усмотрение): rosrun rviz rviz -d catkin_ws/src/aruco_gridboard/data/aruco_grid.rviz
+Для использования аппаратного кодирования:
 
-tab-5 (отсебятина для просмотра чистой картинки):rosrun web_video_server web_video_server _port:=11315
+PC(autovideosink sync=false not needed for gscam):
+gst-launch-1.0 udpsrc port=5000 ! gdpdepay ! rtph264depay ! avdec\_h264 ! videoconvert ! autovideosink sync=false
 
-запуск rpi
-gst-launch-1.0 rpicamsrc bitrate=1000000 ! 'video/x-h264,width=640,height=480' ! h264parse ! queue ! rtph264pay config-interval=1 pt=96 ! gdppay ! udpsink host=192.168.1.53 port=5000
+RPI stream:
 
-для задержки в 80мс на пк:\\
-clever@clever-dev: gst-launch-1.0 udpsrc port=5000 ! "image/jpeg,width=640,height=480,framerate=30/1" ! jpegdec ! videoconvert ! autovideosink sync=false
-
-на рпи:
-gst-launch-1.0 rpicamsrc bitrate=10000000 iso=800 shutter-speed=10000 contrast=50 ! "image/jpeg,width=640,height=480,framerate=30/1" ! udpsink host=192.168.1.53 port=5000
-
-export GSCAM_CONFIG="udpsrc port=5000 ! "image/jpeg,width=640,height=480,framerate=30/1" ! jpegdec ! videoconvert ! autovideosink sync=false"
+gst-launch-1.0 rpicamsrc bitrate=1000000 ! "video/x-raw,width=640,height=480,framerate=30/1" ! \
+omxh264enc target-bitrate=1000000 control-rate=variable ! \
+'video/x-h264,width=640,height=480'! h264parse ! queue ! \
+rtph264pay config-interval=1 pt=96 ! gdppay ! udpsink host=192.168.1.253 port=5000
