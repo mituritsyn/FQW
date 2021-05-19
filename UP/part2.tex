@@ -6,15 +6,15 @@
 Прошила через qgroundcontrol на pixracer r15 ardupilot, произвела первоначальную настройку-выбрала тип рамы, откалибровала датчики.
 Указала следующие параметры:
 \begin{MyCode}
-AHRS_EKF_TYPE 2
-EKF2_ENABLE 1
-EKF3_ENABLE 0
-EK2_GPS_TYPE 3
-EK2_POSNE_M_NSE 0.1
-EK2_EXTNAV_DELAY 80
-GPS_TYPE 0
-COMPASS_USE 0
-VISO_TYPE 0
+AHRS\_EKF\_TYPE 2
+EKF2\_ENABLE 1
+EKF3\_ENABLE 0
+EK2\_GPS\_TYPE 3
+EK2\_POSNE\_M\_NSE 0.1
+EK2\_EXTNAV\_DELAY 80
+GPS\_TYPE 0
+COMPASS\_USE 0
+VISO\_TYPE 0
 \end{MyCode}
 
 \subsection{Настройка Raspberry Pi zero w}
@@ -27,7 +27,7 @@ VISO_TYPE 0
 \$ sudo dd if=/home/qw/2018-11-13-raspbian-stretch-lite.img bs=4M of=/dev/sdd conv=fsync
 \$ sync
 \end{MyCode}
-Для подключения к роутеру изменила параметры wpa_supplicant.conf.
+Для подключения к роутеру изменила параметры wpa\_supplicant.conf.
 \begin{MyCode}
 \$ less /etc/wpa_supplicant/wpa_supplicant.conf
 ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
@@ -89,14 +89,12 @@ Nmap done: 256 IP addresses (4 hosts up) scanned in 4.42 seconds
 %https://diydrones.com/group/voltarobots/forum/connect-telemetry-through-tcp-udp?commentId=7447824%3AComment%3A1590641
 %https://stackoverflow.com/questions/7669240/webcam-streaming-using-gstreamer-over-udp
 
-Для использования аппаратного кодирования:
+%Для использования аппаратного кодирования:
+%\begin{MyCode}
+%PC(autovideosink sync=false not needed for gscam):
+%gst-launch-1.0 udpsrc port=5000 ! gdpdepay ! rtph264depay ! avdec\_h264 ! videoconvert ! autovideosink sync=false
 
-PC(autovideosink sync=false not needed for gscam):
-gst-launch-1.0 udpsrc port=5000 ! gdpdepay ! rtph264depay ! avdec\_h264 ! videoconvert ! autovideosink sync=false
+%RPI stream:
 
-RPI stream:
-
-gst-launch-1.0 rpicamsrc bitrate=1000000 ! "video/x-raw,width=640,height=480,framerate=30/1" ! \
-omxh264enc target-bitrate=1000000 control-rate=variable ! \
-'video/x-h264,width=640,height=480'! h264parse ! queue ! \
-rtph264pay config-interval=1 pt=96 ! gdppay ! udpsink host=192.168.1.253 port=5000
+%gst-launch-1.0 rpicamsrc bitrate=1000000 ! "video/x-raw,width=640,height=480,framerate=30/1" ! omxh264enc target-bitrate=1000000 control-rate=variable ! 'video/x-h264,width=640,height=480'! h264parse ! queue ! rtph264pay config-interval=1 pt=96 ! gdppay ! udpsink host=192.168.1.253 port=5000
+%\end{MyCode}

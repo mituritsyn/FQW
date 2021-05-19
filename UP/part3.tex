@@ -1,27 +1,22 @@
 
 \section{Глава 3. Конфигурация наземной станции}
 
-\subsection{Запуск веб топика на виртуалке}
-собираем пакет gscam 
-git clone https://github.com/ros-drivers/gscam
-сборка:
-cmake -DGSTREAMER_VERSION_1_x=On
+\subsection{Запуск WEB-топика}
+Для получения трансляции и публикации топиков с изображением с камеры используется gscam. Он собирается из репозитория https://github.com/ros-drivers/gscam командой:
+\$ cmake -DGSTREAMER\_VERSION\_1\_x=On
 
-$ source ~/catkin-ws/devel/setup.bash
-В одной вкладке $ roscore (если не запущен)
+%$ source ~/catkin-ws/devel/setup.bash
+%В одной вкладке $ roscore (если не запущен)
+%https://code.google.com/archive/p/brown-ros-pkg/wikis/Quick_start_rosbridge_and_ROS.wiki дл роскор, жскам
+Для конфигурации gscam необходим экспорт используемых для трансляции параметров \$ export GSCAM\_CONFIG="udpsrc port=5000 ! gdpdepay ! rtph264depay ! avdec\_h264 ! videoconvert"
 
-в roscd gscam $ export GSCAM_CONFIG="udpsrc port=5000 ! gdpdepay ! rtph264depay ! avdec_h264 ! videoconvert"
-$ rosrun gscam gscam
+%На rpi: gst-launch-1.0 rpicamsrc bitrate=1000000 ! 'video/x-h264,width=640,height=480' ! h264parse ! queue ! rtph264pay config-interval=1 pt=96 ! gdppay ! udpsink host=192.168.1.53 port=5000
+%где =192.168.1.53 - ip ПК
+%На ПК: $ rosrun web_video_server web_video_server _port:=11315
+%На localhost:11315 появляется топик image_raw.
+%Задержка ~200мс, для уменьшения необходимо сменить кодек на *jpeg*
 
-На rpi: gst-launch-1.0 rpicamsrc bitrate=1000000 ! 'video/x-h264,width=640,height=480' ! h264parse ! queue ! rtph264pay config-interval=1 pt=96 ! gdppay ! udpsink host=192.168.1.53 port=5000
-где =192.168.1.53 - ip ПК
-
-На ПК: $ rosrun web_video_server web_video_server _port:=11315
-
-На localhost:11315 появляется топик image_raw.
-Задержка ~200мс, для уменьшения необходимо сменить кодек на *jpeg*
-
-Для взаимодействия с clover необходимо изменить источник камеры в $ nano launch/main_camera.launch
+%Ввиду использования настроенного под coex clover окружения необходимо изменить источник камеры в launch/main\_camera.launch.
 
 \subsection{Запуск aruco\_gridboard}
 tab-1 (запуск нод gscam и aruco\_gridboard по полученному топику): 
@@ -60,4 +55,4 @@ export GSCAM_CONFIG="udpsrc port=5000 ! "image/jpeg,width=640,height=480,framera
 \$ source devel/setup.bash
 catkin\_make --only-pkg-with-deps <target\_package>
 
-%https://code.google.com/archive/p/brown-ros-pkg/wikis/Quick_start_rosbridge_and_ROS.wiki дл роскор, жскам
+
