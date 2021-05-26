@@ -1,33 +1,83 @@
-\section{Глава 2. Конфигурация дрона для обнаружения местоположения}
+\section{Глава 2. Настройка дрона для обнаружения местоположения}
 
 %\https://discuss.ardupilot.org/t/indoor-autonomous-flight-with-arducopter-ros-and-aruco-boards-detection/34699
 
-\subsection{Настройка ardupilot}
-Прошила через qgroundcontrol на pixracer r15 ardupilot, произвела первоначальную настройку-выбрала тип рамы, откалибровала датчики.
-Указала следующие параметры:
-\begin{MyCode}
-AHRS\_EKF\_TYPE 2
-EKF2\_ENABLE 1
-EKF3\_ENABLE 0
-EK2\_GPS\_TYPE 3
-EK2\_POSNE\_M\_NSE 0.1
-EK2\_EXTNAV\_DELAY 80
-GPS\_TYPE 0
-COMPASS\_USE 0
-VISO\_TYPE 0
-\end{MyCode}
+\subsection{Настройка PX4}
+Через конфигуратор qgroundcontrol на полетный контроллер загружается прошивка PX4, после чего необходима первоначальная настройка.
 
-\subsection{Настройка Raspberry Pi zero w}
+Последовательность действий:
+\begin{itemize}
+	\item указание прошивке на тип и схему БПЛА (квадрокоптер);
+	\item калибровку датчиков (акселерометра, магнитометра, гироскопа...);
+	\item проверка корректности ориентации датчиков положения -- акселерометра и гироскопа (отклонения по всем осям происходят в нужные стороны);
+	\item конфигурация протокола радиоуправления;
+	\item калибровка и настройка каналов радиоуправления (выставлены последовательно соответствующие оси и добавлены необходимые режимы);
+	\item проверяется и задается последовательность моторов (порядковые номера моторов соответствуют используемым прошивкой полетного контроллера);
+	\item проверяется направление вращений моторов и пропеллеров (диагональные моторы вращаются в одинаковых направлениях согласно выбранной схеме ЛА).
+\end{itemize}
 
-Для микрокомпьютера выбрана операционная система raspbian stretch lite.
+Часто в связи с некорректной настройкой одного из описанных пунктов возникают неконтролируемые ситуации при старте -- дрон отказывается взлетать или переворачивается при взлете.
+
+Выставляются полетные режимы:
+
+ACRO -- режим, где отклонением стиков задается угловая скорость для соответствующей оси дрона. Центральное положение стика означает нулевую угловую скорость; в то время как угловая скорость при крайнем положении настраивается значением системы рейтов. Таким образом, при нулевом положении стика дрон не возвращается в горизонт (отсутствует стабилизация уровня). Режим ACRO используется для акробатических полетов, когда требуется плавное и быстрое управление \cite{ardupilot}.
+
+STABILIZED -- режим стабилизации дрона, когда стики аппаратуры находятся в центре; используется для ручного управления в ходе полетных испытаний внутри помещения.
+
+POSHOLD -- удержание позиции по датчикам / компьютерному зрению; когда будет настроена система оценки положения дрона в пространстве, при включении указанного режима дрон должен держаться в одной точке с учетом погрешности.
+
+OFFBOARD -- управление полетом с внешнего компьютера. Этот режим используется для программирования автономных полетов \cite{clover}, при котором управление происходит из выполняемой на внешнем компьютере программы.
+
+После выполнения описанных в начале раздела шагов производится взлет в ручных режимах. Во время полета проверяется ПИД регулирование.
+
+Настройка ПИД-регулятора производится стандартным методом step response \cite{tau}. Суть метода заключается в передаче ступенчатого управляющего сигнала на вход регулятора и анализе реакции системы на него.
+Медленная реакция на ступенчатый управляющий сигнал указывает на низкий коэффициент пропорциональной составляющей.
+Коэффициент увеличивается до появления характерного перерегулирования.
+После чего остаточные осцилляции гасятся путем повышения коэффициента дифференциальной составляющей.
+
+Далее изменяются параметры для взаимодействия с Raspberry Pi: указывается используемый порт (UART) и бод-рейт 921600.
+Для уменьшения задержки вместо всех mavlink сообщений на наземную станцию будут отправляться только сообщения внешнего визуального позиционирования.
+
+Отключаются использование компаса и GPS, так как они не используются, и выставляются параметры для оценки положения по ECL.
+
+Библиотека оценки и управления (ECL) использует алгоритм расширенного фильтра Калмана (EKF) для обработки измерений датчика и предоставления оценки следующих состояний:
+\begin{itemize}
+	\item кватернион, определяющий вращение из одной системы отсчета(North, East, Down локальной координатной плоскости) в другую ( X, Y, Z тела);
+	\item скорость на IMU - North, East, Down (м / с);
+	\item положение в IMU - North, East, Down (м);
+	\item оценки смещения угла дельты IMU - X, Y, Z (рад);
+	\item оценки смещения дельта-скорости IMU - X, Y, Z (м / с);
+	\item компоненты магнитного поля Земли - North, East, Down (гаусс);
+	\item смещение магнитного поля рамы кузова автомобиля - X, Y, Z (Гаусс);
+	\item скорость ветра - север, восток (м / с).
+\end{itemize}
+EKF реализует систему "отложенного временного горизонта слияния", что позволяет учесть временные задержки опроса датчиков относительно IMU. Данные для каждого датчика буферизуются FIFO и извлекаются из буфера с помощью EKF для использования в нужное время. Компенсация задержки для каждого датчика регулируется параметрами EKF2*DELAY.
+
+EKF имеет разные режимы работы, которые позволяют использовать различные комбинации опроса датчиков. При запуске фильтр проверяет минимальную жизнеспособную комбинацию датчиков и после завершения начального выравнивания наклона, рыскания и высоты входит в режим, который обеспечивает оценку вращения, вертикальной скорости, вертикального положения, отклонения угла отклонения IMU и отклонения дельта-скорости IMU.
+
+Для этого режима требуются данные IMU, источник рыскания (магнитометр или система внешнего визуального позиционирования(external vision)) и источник данных о высоте. Этот минимальный набор данных требуется для всех режимов работы EKF. Затем данные других датчиков можно использовать для оценки дополнительных состояний \cite{px4}.
+
+В качестве системы внешнего визуального позиционирования используется RPi c камерой.
+
+%https://docs.px4.io/master/en/advanced_config/tuning_the_ecl_ekf.html
+
+%https://docs.px4.io/master/en/ros/external_position_estimation.html
+%https://docs.px4.io/master/en/peripherals/mavlink_peripherals.html
+
+\subsection{Настройка Raspberry Pi}
+
+Для RPi выбрана операционная система raspbian stretch lite.
 %http://www.pcds.fi/downloads/operatingsystem/debianbased/raspbian/archive/stretch/raspbian.stretch.html
-С помощью команд, представленных на листинге 1, записала образ на карту памяти микрокомпьютера.
+С помощью команд, представленных на листинге \ref{lst:5}, был записан образ на карту памяти микрокомпьютера.
+\begin{Program}[H]
+	\caption{Подготовка карты памяти для RPi} \label{lst:5}
 \begin{MyCode}
 \$ unzip -p 2018-11-13-raspbian-stretch-lite.zip
 \$ sudo dd if=/home/qw/2018-11-13-raspbian-stretch-lite.img bs=4M of=/dev/sdd conv=fsync
 \$ sync
 \end{MyCode}
-Для подключения к роутеру изменила параметры wpa\_supplicant.conf.
+Для подключения к роутеру изменены параметры wpa\_supplicant.conf.
+
 \begin{MyCode}
 \$ less /etc/wpa_supplicant/wpa_supplicant.conf
 ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
@@ -36,13 +86,16 @@ country=RU
 
 network={
 	ssid="ИМЯ_ТОЧКИ_ДОСТУПА"
-	psk=123456789
+	psk=passwd
 }
 \end{MyCode}
+\end{Program}
 %https://habr.com/ru/post/419947/
 Для возможности удаленного подключения создан файл ssh в каталоге /boot.
 
-После изменений перезагружается система и с помощью утилиты nmap на компьютере проверяются все подключения к роутеру:
+После произведенных шагов карта памяти устанавливается в RPi, и с помощью утилиты nmap на наземной станции проверяются все подключения к роутеру (листинг \ref{lst:6}).
+\begin{Program}[H]
+	\caption{Поиск адресов в подсети роутера} \label{lst:6}
 \begin{MyCode}
 \$ sudo nmap -sn 192.168.1.0/24
 ...
@@ -54,47 +107,28 @@ Host is up.
 Nmap done: 256 IP addresses (4 hosts up) scanned in 4.42 seconds
 ...
 \end{MyCode}
-192.168.1.148-адрес Raspberry.
+\end{Program}
+192.168.1.148 -- адрес Raspberry Pi.
 %https://www.raspberrypi.org/documentation/remote-access/ip-address.md
-Для возможности запускать трансляцию видео с борта дрона необходимо установить следующие пакеты:
-\begin{MyCode}
-	gstreamer1.0
-	gstreamer1.0-tools
-	gstreamer1.0-plugins-good
-	ser2net, после установки необходимо изменить /etc/ser2net.conf, добавив в конце строку, определяющую, как будет полетный контроллер общаться с микрокомпьютером
-	2000:raw:0:/dev/ttyAMA0:115200 8DATABITS NONE 1STOPBIT
-	и собрать gst-rpicamsrc из репозитория (https://github.com/thaytan/gst-rpicamsrc) с помощью команд make, make install; он необходим для использования rpi-камеры в качестве источника видеопотока во время трансляции.
+Производится удаленное подключение по ssh по найденному адресу, и устанавливаются пакеты gstreamer для запуска трансляции видео с борта дрона.
+Для обмена данными между полетным контроллером и RPi устанавливается пакет ser2net и в конфигурационном файле /etc/ser2net.conf добавляется строка, определяющая способ общения, в данном случае она выглядит так (листинг \ref{lst:7}):
+\begin{Program}[H]
+	\caption{Параметры для обмена сообщениями между полетным контроллером и RPi} \label{lst:7}
+	\begin{MyCode}
+		2000:raw:0:/dev/ttyAMA0:115200 8DATABITS NONE 1STOPBIT
 \end{MyCode}
-%https://discuss.ardupilot.org/t/indoor-autonomous-flight-with-arducopter-ros-and-aruco-boards-detection/34699/34
+\end{Program}
 
-Информация о камере:
-\begin{MyCode}
-\$ v4l2-ctl --list-formats-ext -d /dev/video0
+Для использования RPi камеры в качестве источника данных трансляции производится сборка gst-rpicamsrc из репозитория \url{https://github.com/thaytan/gst-rpicamsrc} с помощью команд, представленных на листинге \ref{lst:8}:
+\begin{Program}[H]
+	\caption{Сборка rpicamsrc} \label{lst:8}
+	\begin{MyCode}
+		\$ git clone https://github.com/thaytan/gst-rpicamsrc
+		\$ cd gst-rpicamsrc
+		\$ make
+		\$ make install
 \end{MyCode}
-%https://platypus-boats.readthedocs.io/en/latest/source/rpi/video/video-streaming-gstreamer.html
+\end{Program}
 
 Уменьшили задержку с помощью передачи udp пакетов. Теперь она 150мс:
-\begin{MyCode}
-На ПК запускается:
-\$ gst-launch-1.0 udpsrc port=5000 ! gdpdepay ! rtph264depay ! avdec_h264 ! videoconvert ! autovideosink sync=false
-
-На Raspberry:
-\$ gst-launch-1.0 rpicamsrc bitrate=1000000 ! 'video/x-h264,width=640,height=480' ! h264parse ! queue ! rtph264pay config-interval=1 pt=96 ! gdppay ! udpsink host=[IP ПК] port=5000
-%\$ gst-launch-1.0 -v rpicamsrc bitrate=10000000 rotation=180 exposure-mode=10 awb-mode=0 awb-gain-red=1 awb-gain-blue=2 iso=800 shutter-speed=10000 contrast=50 ! "image/jpeg,width=640,height=480,framerate=30/1" ! udpsink host=192.168.1.148 port=9000
-%https://www.raspberrypi.org/forums/viewtopic.php?t=196176
-\end{MyCode}
-
-
-%https://docs.opencv.org/master/db/da9/tutorial_aruco_board_detection.html
-%https://diydrones.com/group/voltarobots/forum/connect-telemetry-through-tcp-udp?commentId=7447824%3AComment%3A1590641
-%https://stackoverflow.com/questions/7669240/webcam-streaming-using-gstreamer-over-udp
-
-%Для использования аппаратного кодирования:
-%\begin{MyCode}
-%PC(autovideosink sync=false not needed for gscam):
-%gst-launch-1.0 udpsrc port=5000 ! gdpdepay ! rtph264depay ! avdec\_h264 ! videoconvert ! autovideosink sync=false
-
-%RPI stream:
-
-%gst-launch-1.0 rpicamsrc bitrate=1000000 ! "video/x-raw,width=640,height=480,framerate=30/1" ! omxh264enc target-bitrate=1000000 control-rate=variable ! 'video/x-h264,width=640,height=480'! h264parse ! queue ! rtph264pay config-interval=1 pt=96 ! gdppay ! udpsink host=192.168.1.253 port=5000
-%\end{MyCode}
+Все необходимые изменения внесены, далее следует произвести настройку наземной станции.

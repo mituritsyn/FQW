@@ -1,2 +1,26 @@
 
 \section{Глава 4. Проектирование системы для отправки сообщений на борт дрона с наземной станции}
+\begin{MyCode}
+	На ПК запускается:
+	\$ gst-launch-1.0 udpsrc port=5000 ! gdpdepay ! rtph264depay ! avdec_h264 ! videoconvert ! autovideosink sync=false
+	
+	На Raspberry:
+	\$ gst-launch-1.0 rpicamsrc bitrate=1000000 ! 'video/x-h264,width=640,height=480' ! h264parse ! queue ! rtph264pay config-interval=1 pt=96 ! gdppay ! udpsink host=[IP ПК] port=5000
+	%\$ gst-launch-1.0 -v rpicamsrc bitrate=10000000 rotation=180 exposure-mode=10 awb-mode=0 awb-gain-red=1 awb-gain-blue=2 iso=800 shutter-speed=10000 contrast=50 ! "image/jpeg,width=640,height=480,framerate=30/1" ! udpsink host=192.168.1.148 port=9000
+	
+\end{MyCode}
+%https://www.raspberrypi.org/forums/viewtopic.php?t=196176
+
+%https://docs.opencv.org/master/db/da9/tutorial_aruco_board_detection.html
+%https://diydrones.com/group/voltarobots/forum/connect-telemetry-through-tcp-udp?commentId=7447824%3AComment%3A1590641
+%https://stackoverflow.com/questions/7669240/webcam-streaming-using-gstreamer-over-udp
+
+%Для использования аппаратного кодирования:
+%\begin{MyCode}
+%PC(autovideosink sync=false not needed for gscam):
+%gst-launch-1.0 udpsrc port=5000 ! gdpdepay ! rtph264depay ! avdec\_h264 ! videoconvert ! autovideosink sync=false
+
+%RPI stream:
+
+%gst-launch-1.0 rpicamsrc bitrate=1000000 ! "video/x-raw,width=640,height=480,framerate=30/1" ! omxh264enc target-bitrate=1000000 control-rate=variable ! 'video/x-h264,width=640,height=480'! h264parse ! queue ! rtph264pay config-interval=1 pt=96 ! gdppay ! udpsink host=192.168.1.253 port=5000
+%\end{MyCode}
