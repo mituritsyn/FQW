@@ -1,58 +1,46 @@
 
 \section{Глава 3. Конфигурация наземной станции}
+Наземная станция представляет собой компьютер, подключенный к тому же роутеру, что и дрон. Операционная система на базе ядра linux, установлены пакеты ros, соответствующие версии ОС, в данном случае ros-melodic-full, и gstreamer для приема видеопотока.
 
-\subsection{Запуск WEB-топика}
-Для получения трансляции и публикации топиков с изображением с камеры используется gscam. Он собирается из репозитория https://github.com/ros-drivers/gscam командой:
-\$ cmake -DGSTREAMER\_VERSION\_1\_x=On
+\subsection{Настройка mavros}
+Для того, чтобы ноды могли обмениваться данными, необходим roscore. roscore - это набор нод и программ, которые являются предпосылками системы на основе ROS \cite{ros}. Запускается с помощью команды \$ roscore в одной из вкладок консоли, однако при использовании roslaunch это действие необязательно -- при выполнении roslaunch первым делом запускается roscore.
 
-%$ source ~/catkin-ws/devel/setup.bash
-%В одной вкладке $ roscore (если не запущен)
-%https://code.google.com/archive/p/brown-ros-pkg/wikis/Quick_start_rosbridge_and_ROS.wiki дл роскор, жскам
-Для конфигурации gscam необходим экспорт используемых для трансляции параметров \$ export GSCAM\_CONFIG="udpsrc port=5000 ! gdpdepay ! rtph264depay ! avdec\_h264 ! videoconvert"
+roslaunch - это инструмент для простого запуска нескольких нод ROS. Он включает в себя опции для автоматического запуска уже завершенных процессов. roslaunch принимает один или несколько файлов конфигурации XML (с расширением .launch ), определяющих параметры, которые необходимо установить, и ноды для запуска, а также машины, на которых они должны запускаться \cite{ros}.
 
-%На rpi: gst-launch-1.0 rpicamsrc bitrate=1000000 ! 'video/x-h264,width=640,height=480' ! h264parse ! queue ! rtph264pay config-interval=1 pt=96 ! gdppay ! udpsink host=192.168.1.53 port=5000
-%где =192.168.1.53 - ip ПК
-%На ПК: $ rosrun web_video_server web_video_server _port:=11315
-%На localhost:11315 появляется топик image_raw.
-%Задержка ~200мс, для уменьшения необходимо сменить кодек на *jpeg*
+Для получения телеметрии полетного контроллера в /opt/ros/melodic/sha\-re/mavros/launch/px4.launch файле поменять параметры fcu\_url, указав нужный адрес и порт. Видеопоток планируется получать UDP пакетами, для их обработки необходимо указать адрес и порт в параметре gcs\_url (листинг \ref{lst:9}):
+\begin{Program}[H]
+	\caption{Измененные параметры в launch файле mavros} \label{lst:9}
+\begin{MyCode}
+<arg name="fcu_url" default="tcp://192.168.1.148:2000?ids=1,240"/>   
+<arg name="gcs_url" default="udp://@127.0.0.1:14555"/>
+\end{MyCode}
+\end{Program}
 
-%Ввиду использования настроенного под coex clover окружения необходимо изменить источник камеры в launch/main\_camera.launch.
+\subsection{Подготовка инструментов для получения и обработки видеопотока}
+Для получения трансляции и публикации топиков с изображением с камеры используется gscam. Он собирается из репозитория https://github.com/ros-drivers/gscam командами, представленными в листинге \ref{lst:10}:
+\begin{Program}[H]
+	\caption{Сборка gscam} \label{lst:10}
+\begin{MyCode}
+$ git clone https://github.com/ros-drivers/gscam
+$ cd gscam
+$ cmake -DGSTREAMER_VERSION_1_x=On
+$ сmake install
+\end{MyCode}
+\end{Program}
 
-\subsection{Запуск aruco\_gridboard}
-tab-1 (запуск нод gscam и aruco\_gridboard по полученному топику): 
-export GSCAM\_CONFIG="udpsrc port=5000 ! gdpdepay ! rtph264depay ! avdec\_h264 ! videoconvert"
-roslaunch aruco\_gridboard detection\_rpicam.launch
+Распознавание карты aruco маркеров на изображении, получаемом из топиков gscam, и публикацию полученных координат в топик /vision/pose производит aruco\_gridboard. Команды для сборки этого пакета представлены в листинге \ref{lst:11}:
+\begin{Program}[H]
+	\caption{Сборка aruco\_gridboard} \label{lst:11}
+\begin{MyCode}
+$ cd ~/catkin_ws/src
+$ git clone https://github.com/anbello/aruco_gridboard.git
+$ cd ..
+$ catkin_make
+$ source devel/setup.bash
+$ catkin_make --only-pkg-with-deps aruco_gridboard
+\end{MyCode}
+\end{Program}
 
-tab-2 (запуск окружения маврос): roslaunch mavros apm.launch
-
-tab-3 (The messages SET\_GPS\_GLOBAL\_ORIGIN and a SET\_HOME\_POSITION are sent with a script before starting to use the system.): rosrun aruco\_gridboard set\_origin.py
-
-tab-4 (запуск rviz на усмотрение): rosrun rviz rviz -d catkin\_ws/src/aruco\_gridboard/data/aruco\_grid.rviz
-
-запуск rpi
-gst-launch-1.0 rpicamsrc bitrate=1000000 ! 'video/x-h264,width=640,height=480' ! h264parse ! queue ! rtph264pay config-interval=1 pt=96 ! gdppay ! udpsink host=192.168.1.53 port=5000
-
-для задержки в 80мс на пк:\\
-clever@clever-dev: gst-launch-1.0 udpsrc port=5000 ! "image/jpeg,width=640,height=480,framerate=30/1" ! jpegdec ! videoconvert ! autovideosink sync=false
-
-на рпи:
-gst-launch-1.0 rpicamsrc bitrate=10000000 iso=800 shutter-speed=10000 contrast=50 ! "image/jpeg,width=640,height=480,framerate=30/1" ! udpsink host=192.168.1.53 port=5000
-
-export GSCAM\_CONFIG="udpsrc port=5000 ! "image/jpeg,width=640,height=480,framerate=30/1" ! jpegdec ! videoconvert"
-\$ rostopic echo /mavros/vision\_pose/pose
-
------
-Собрали через каткин драйвер gscam, запустили roscore, осталось изменить лаунч и получить поток.
-Для создания топиков необхходимо настроить маврос.
-
-В /opt/ros/melodic/share/mavros/launch/apm.launch меняется параметр fcu\_url для общения с телеметрией по порту полетника с помощью ser2net proxy:
-<arg name="fcu\_url" default="tcp://192.168.10.16:2000" />
-
-\$ cd ~/catkin\_ws/src
-\$ git clone https://github.com/jokla/aruco\_gridboard.git
-\$ cd ..
-\$ catkin\_make
-\$ source devel/setup.bash
-catkin\_make --only-pkg-with-deps <target\_package>
+Проделанных шагов достаточно, чтобы на наземной станции отобразить положение дрона относительно карты маркеров.
 
 

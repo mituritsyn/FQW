@@ -72,14 +72,14 @@ EKF имеет разные режимы работы, которые позво
 \begin{Program}[H]
 	\caption{Подготовка карты памяти для RPi} \label{lst:5}
 \begin{MyCode}
-\$ unzip -p 2018-11-13-raspbian-stretch-lite.zip
-\$ sudo dd if=/home/qw/2018-11-13-raspbian-stretch-lite.img bs=4M of=/dev/sdd conv=fsync
-\$ sync
+$ unzip -p 2018-11-13-raspbian-stretch-lite.zip
+$ sudo dd if=/home/qw/2018-11-13-raspbian-stretch-lite.img of=/dev/sdd
+$ sync
 \end{MyCode}
 Для подключения к роутеру изменены параметры wpa\_supplicant.conf.
 
 \begin{MyCode}
-\$ less /etc/wpa_supplicant/wpa_supplicant.conf
+$ less /etc/wpa_supplicant/wpa_supplicant.conf
 ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
 update_config=1
 country=RU
@@ -97,7 +97,7 @@ network={
 \begin{Program}[H]
 	\caption{Поиск адресов в подсети роутера} \label{lst:6}
 \begin{MyCode}
-\$ sudo nmap -sn 192.168.1.0/24
+$ sudo nmap -sn 192.168.1.0/24
 ...
 Nmap scan report for 192.168.1.148
 Host is up (-0.062s latency).
@@ -114,21 +114,20 @@ Nmap done: 256 IP addresses (4 hosts up) scanned in 4.42 seconds
 Для обмена данными между полетным контроллером и RPi устанавливается пакет ser2net и в конфигурационном файле /etc/ser2net.conf добавляется строка, определяющая способ общения, в данном случае она выглядит так (листинг \ref{lst:7}):
 \begin{Program}[H]
 	\caption{Параметры для обмена сообщениями между полетным контроллером и RPi} \label{lst:7}
-	\begin{MyCode}
-		2000:raw:0:/dev/ttyAMA0:115200 8DATABITS NONE 1STOPBIT
+\begin{MyCode}
+2000:raw:0:/dev/ttyAMA0:115200 8DATABITS NONE 1STOPBIT
 \end{MyCode}
 \end{Program}
 
 Для использования RPi камеры в качестве источника данных трансляции производится сборка gst-rpicamsrc из репозитория \url{https://github.com/thaytan/gst-rpicamsrc} с помощью команд, представленных на листинге \ref{lst:8}:
 \begin{Program}[H]
 	\caption{Сборка rpicamsrc} \label{lst:8}
-	\begin{MyCode}
-		\$ git clone https://github.com/thaytan/gst-rpicamsrc
-		\$ cd gst-rpicamsrc
-		\$ make
-		\$ make install
+\begin{MyCode}
+$ git clone https://github.com/thaytan/gst-rpicamsrc
+$ cd gst-rpicamsrc
+$ make
+$ make install
 \end{MyCode}
 \end{Program}
 
-Уменьшили задержку с помощью передачи udp пакетов. Теперь она 150мс:
 Все необходимые изменения внесены, далее следует произвести настройку наземной станции.
