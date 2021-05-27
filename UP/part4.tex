@@ -19,7 +19,7 @@ udpsink host=[IP ПК] port=5000
 \begin{Program}[H]
 \caption{Команда запуска окружения mavros} \label{lst:13}
 \begin{MyCode}
-$ roslaunch mavros apm.launch
+$ roslaunch mavros px4.launch
 \end{MyCode}
 \end{Program}
 После того, как произошли подключение и инициализация дрона в окружении, во второй	 вкладке консоли производится сброс координат дрона (листинг \ref{lst:14}):
@@ -35,8 +35,8 @@ $ rosrun aruco_gridboard set_origin.py
 \caption{Команды запуска aruco\_gridboard с нодой gscam} \label{lst:15}
 \begin{MyCode}
 $ export GSCAM_CONFIG="udpsrc port=5000 ! gdpdepay !\
-rtph264depay ! avdec\_h264 ! videoconvert"
-$ roslaunch aruco\_gridboard detection\_rpicam.launch 
+rtph264depay ! avdec_h264 ! videoconvert"
+$ roslaunch aruco_gridboard detection_rpicam.launch 
 \end{MyCode}
 \end{Program}
 
