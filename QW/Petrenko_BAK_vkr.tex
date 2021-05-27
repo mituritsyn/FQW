@@ -13,6 +13,7 @@
 \usepackage{formular}
 \usepackage{setspace} % управление междустрочными интервалами
 %поля документа
+\usepackage{tocloft}
 \usepackage[left=3cm,right=1cm,top=2cm,bottom=2cm]{geometry}
 
 \usepackage{misccorr} % точки в конце номеров разделов, использовать перед пакетом ccaption!
@@ -32,6 +33,8 @@
 \usepackage{tocloft}
 % управление таблицами и рисунками
 \usepackage{float}
+
+\usepackage{titlesec}
 
 \newcounter{mycitecount}                                %% Счётчик библиографии
 \AtEveryBibitem{\stepcounter{mycitecount}}              %% Работает для biblatex
@@ -84,6 +87,9 @@
 
 % В соответствии с требованием: для списков использовать дефис
 \renewcommand{\labelitemi}{--}
+\titlespacing{\section}{\parindent}{12pt}{12pt}
+\titlespacing{\subsection}{\parindent}{12pt}{12pt}
+\titlespacing{\subsubsection}{\parindent}{12pt}{12pt}
 
 \begin{document}
 
@@ -157,9 +163,9 @@
 	Нормоконтроль & \useFRMfield{xtitlesign} & Пичугина~И.А. \\
 	& & \\
 	% Если нужно добавить консультанта - раскомментируйте две строчки ниже
-	Консультант ВКР бакалавра\\Рук. лаб. дронов ЦМИТ  & \useFRMfield{xtitlesign} & Турицын М. И.\\
+	Консультант ВКР бакалавра\\Инженер ЦОНД  & \useFRMfield{xtitlesign} & Турицын М. И.\\
 	%& & \\
-	Рецензент\\рук. спорт. к. FPVDudes   & \useFRMfield{xtitlesign} & Бахвалов А.\\
+	Рецензент\\к.т.н., доцент ОЯФиТ   & \useFRMfield{xtitlesign} & Белоусов П. А.\\
 	
 	& & \\
 	Выпускная квалификационная \\ работа допущена к защите & \useFRMfield{xtitlesign} &  \\
@@ -249,11 +255,10 @@ AWG -- American Wire Gauge
 
 ПИД регулятор -- Пропорционально-интегрально-дифференциальный регулятор
 
-
 \pagebreak
-\thispagestyle{empty}
-
+\tocloftpagestyle{empty}
 \tableofcontents
+
 \thispagestyle{empty} % страница реферата не нумеруется
 \pagebreak
 
@@ -262,8 +267,6 @@ AWG -- American Wire Gauge
 \addcontentsline{toc}{section}{ВВЕДЕНИЕ}
 \input{intro} % текст введения в файле intro.tex
 \pagebreak
-
-%\input{Post_zad}
 \pagebreak
 \input{part1}  % первая глава - в файле part1.tex
 \pagebreak
@@ -297,35 +300,6 @@ AWG -- American Wire Gauge
 \printbibliography
 
 \pagebreak
-
-\section*{ \centering Приложение А} 
-\addcontentsline{toc}{section}{Приложение А}
-
-\begin{center}
-Листинг 1 -- Часть кода реализации класса \verb|HashMapValue|
-\end{center}
-
-
-\begin{MyCode}
-
-public class HashMapValue {
-	
-	protected String filename; 
-	protected HashMap<String, String> hashValue = 
-	new HashMap<>();
-	protected HashMap<String, Boolean> hashKeysFlag =
-	 new HashMap<>();
-	
-	public void setData(String key, String value) {
-		hashValue.put(key, value);
-	}
-	
-	public String getData(String key) {
-		return hashValue.get(key);
-	}
-    /* ... */
-}
-\end{MyCode}
 
 \end{document}          
 
