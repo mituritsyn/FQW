@@ -56,7 +56,7 @@
 	\end{MyCode}
 \end{Program}
 
-Видеоприемник подключен в порт /dev/video0. Указываем его в launch-файле, перезагружаем clover и проверяем в web-браузере топики по адресу localhost:8080 (рис. \ref{fig:topic}).
+Видеоприемник подключен в порт /dev/video0. Указываем его в launch-файле, перезагружаем clover и проверяем в web-браузере топики по адресу localhost:8080 (рисунок \ref{fig:topic}).
 
 \begin{figure}[H]
 	\centering
@@ -74,3 +74,46 @@
 \end{itemize}
 
 Optical flow отключаем, так как на БПЛА не установлен лазерный дальномер.
+\subsection{Конфигурация наземной станции}
+Наземная станция представляет собой компьютер, подключенный к тому же роутеру, что и дрон. Операционная система на базе ядра linux, установлены пакеты ros, соответствующие версии ОС, в данном случае ros-melodic-full, и gstreamer для приема видеопотока.
+
+\subsection{Настройка mavros}
+Для того, чтобы ноды могли обмениваться данными, необходим roscore \cite{pkg}. roscore - это набор нод и программ, которые являются предпосылками системы на основе ROS \cite{ros}. Запускается с помощью команды \$ roscore в одной из вкладок консоли, однако при использовании roslaunch это действие необязательно -- при выполнении roslaunch первым делом запускается roscore.
+
+roslaunch - это инструмент для простого запуска нескольких нод ROS. Он включает в себя опции для автоматического запуска уже завершенных процессов. roslaunch принимает один или несколько файлов конфигурации XML (с расширением .launch ), определяющих параметры, которые необходимо установить, и ноды для запуска, а также машины, на которых они должны запускаться \cite{ros}.
+
+Для получения телеметрии полетного контроллера в /opt/ros/melodic/sha\-re/mavros/launch/px4.launch файле поменять параметры fcu\_url, указав нужный адрес и порт. Видеопоток планируется получать UDP пакетами, для их обработки необходимо указать адрес и порт в параметре gcs\_url (листинг \ref{lst:9}):
+\begin{Program}[H]
+	\caption{Измененные параметры в launch файле mavros} \label{lst:9}
+	\begin{MyCode}
+		<arg name="fcu_url" default="tcp://192.168.1.148:2000?ids=1,240"/>   
+		<arg name="gcs_url" default="udp://@127.0.0.1:14555"/>
+	\end{MyCode}
+\end{Program}
+
+\subsection{Подготовка инструментов для получения и обработки видеопотока}
+Для получения трансляции и публикации топиков с изображением с камеры используется gscam. Он собирается из репозитория \url{https://github.com/ros-drivers/gscam} командами, представленными в листинге \ref{lst:10}:
+\begin{Program}[H]
+	\caption{Сборка gscam} \label{lst:10}
+	\begin{MyCode}
+		$ git clone https://github.com/ros-drivers/gscam
+		$ cd gscam
+		$ cmake -DGSTREAMER_VERSION_1_x=On
+		$ сmake install
+	\end{MyCode}
+\end{Program}
+
+Распознавание карты aruco маркеров на изображении, получаемом из топиков gscam, и публикацию полученных координат в топик /vision/pose производит aruco\_gridboard. Команды для сборки этого пакета представлены в листинге \ref{lst:11}:
+\begin{Program}[H]
+	\caption{Сборка aruco\_gridboard} \label{lst:11}
+	\begin{MyCode}
+		$ cd ~/catkin_ws/src
+		$ git clone https://github.com/anbello/aruco_gridboard.git
+		$ cd ..
+		$ catkin_make
+		$ source devel/setup.bash
+		$ catkin_make --only-pkg-with-deps aruco_gridboard
+	\end{MyCode}
+\end{Program}
+
+Проделанных шагов достаточно, чтобы на наземной станции отобразить положение дрона относительно карты маркеров.
