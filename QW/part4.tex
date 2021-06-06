@@ -21,6 +21,7 @@ udpsink host=[IP ПК] port=5000
 $ roslaunch mavros px4.launch
 \end{MyCode}
 \end{Program}
+
 После того, как произошли подключение и инициализация дрона в окружении, во второй	 вкладке консоли производится сброс координат дрона (листинг \ref{lst:14}):
 \begin{Program}[H]
 	\caption{Команда сброса координат дрона} \label{lst:14}
@@ -29,6 +30,7 @@ $ roslaunch mavros px4.launch
 $ rosrun aruco_gridboard set_origin.py
 \end{MyCode}
 \end{Program}
+
 В третьей вкладке консоли запускается aruco\_gridboard, совмещенный с нодой gscam, для получения и обработки изображения (листинг \ref{lst:15}):
 \begin{Program}[H]
 \caption{Команды запуска aruco\_gridboard с нодой gscam} \label{lst:15}
@@ -46,6 +48,7 @@ $ roslaunch aruco_gridboard detection_rpicam.launch
 $ rosrun rviz rviz -d catkin_ws/src/aruco_gridboard/data/aruco_grid.rviz
 \end{MyCode}
 \end{Program}
+
 На рисунке \ref{fig:px4} отображены вывод в консоль координат, полученных aruco\_g\-rid\-board, изображение с камеры дрона с началом координат на карте маркеров и поле rviz с моделью дрона относительно карты.
 % ~\ref{fig:px4}
 \begin{figure}[H]
