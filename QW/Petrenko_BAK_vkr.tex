@@ -3,70 +3,7 @@
 %
 
 \documentclass[a4paper,12pt]{article}
-\usepackage[backend=biber,sorting=none,style=gost-numeric,autolang=other]{biblatex} % библиография
-\usepackage{mathtext} %русские буквы в формулах
-\usepackage[T2A]{fontenc}
-\usepackage[utf8]{inputenc}
-\usepackage[english,russian]{babel}
-\usepackage{amsmath}
-\usepackage{fancyvrb}
-\usepackage{formular}
-\usepackage{setspace} % управление междустрочными интервалами
-%поля документа
-\usepackage{tocloft}
-\usepackage[left=3cm,right=1cm,top=2cm,bottom=2cm]{geometry}
-
-\usepackage{misccorr} % точки в конце номеров разделов, использовать перед пакетом ccaption!
-\usepackage{ccaption} % изменения подписей к рисункам и табл.
-
-\usepackage[nooneline]{caption} 
-\captionsetup[table]{justification=raggedright} % заголовок таблицы выравнивается влево
-\captionsetup[figure]{justification=centering,labelsep=endash} % заголовок рисунка - по центру
-
-% отступ перед первым абзацем
-\usepackage{indentfirst}
-%вставка изображений
-\usepackage{graphicx}
-% счетчики
-\usepackage{totcount}
-% управление содержанием
-\usepackage{tocloft}
-% управление таблицами и рисунками
-\usepackage{float}
-
-\usepackage{titlesec}
-
-\newcounter{mycitecount}                                %% Счётчик библиографии
-\AtEveryBibitem{\stepcounter{mycitecount}}              %% Работает для biblatex
-
-\usepackage[figure,      %
-            table,       %
-            mycitecount, xspace ]{totalcount}           %% Подсчёт общего количества объектов в документе
-
-% окружение для листингов - с нумерацией строк слева
-\DefineVerbatimEnvironment{MyCode}{Verbatim}{frame=lines,numbers=left,numberblanklines=false,framesep=5mm}
-
-% автоматическая нумерация листингов
-\newfloat{Program}{phb}{lop}
-\floatname{Program}{Листинг}
-\floatstyle{ruled}
-
-\captionsetup[Program]{justification=centering} % подпись к листингу - по центру
-
-\setlength{\parindent}{1.25cm} % абзацный отступ в соответствии с ГОСТ
-
-\setcounter{secnumdepth}{3} % глубина нумерации до подразделов
-
-%если нужны точки в оглавлении для разделов - раскомментируйте следующую команду
-%\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
-
-\addto\captionsrussian{%
-\renewcommand{\figurename}{Рисунок}%
-\renewcommand{\tablename}{Таблица}%
-}
-
-% дефис в подписи к рисункам
-\captiondelim{ -- } 
+\usepackage{vkriate}
 
 % Настройки для окружений с подчеркиваниями для подписей и пр.
 \setFRMfontencoding{T2A}
@@ -85,12 +22,6 @@
 %имя файла с библиографией в формате BibTex
 \addbibresource{rbiblio.bib}
 
-% В соответствии с требованием: для списков использовать дефис
-\setlength\leftmargini{4em}
-\renewcommand{\labelitemi}{--}
-\titlespacing{\section}{\parindent}{12pt}{12pt}
-\titlespacing{\subsection}{\parindent}{12pt}{12pt}
-\titlespacing{\subsubsection}{\parindent}{12pt}{12pt}
 
 \begin{document}
 
@@ -265,8 +196,8 @@ AWG -- American Wire Gauge
 \thispagestyle{empty} % страница реферата не нумеруется
 \pagebreak
 
-\section*{\centering ВВЕДЕНИЕ}
 \setcounter{page}{3}
+\section*{\centering ВВЕДЕНИЕ}
 \addcontentsline{toc}{section}{ВВЕДЕНИЕ}
 \input{intro} % текст введения в файле intro.tex
 \pagebreak
