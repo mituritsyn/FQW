@@ -284,19 +284,35 @@ class MavController:
 	
 	def __init__(self):
 		rospy.init_node("mav_control_node")
-		rospy.Subscriber("/mavros/local_position/pose", PoseStamped, self.pose_callback)
-		rospy.Subscriber("/mavros/rc/in", RCIn, self.rc_callback)
+		rospy.Subscriber("/mavros/local_position/pose",
+				 PoseStamped, self.pose_callback)
+		rospy.Subscriber("/mavros/rc/in", RCIn,
+				 self.rc_callback)
 		
-		self.cmd_pos_pub = rospy.Publisher("/mavros/setpoint_position/local", PoseStamped, queue_size=1)
-		self.cmd_vel_pub = rospy.Publisher("/mavros/setpoint_velocity/cmd_vel_unstamped", Twist, queue_size=1)
-		self.rc_override = rospy.Publisher("/mavros/rc/override", OverrideRCIn, queue_size=1)
+		pLoc = "/mavros/setpoint_position/local"
+		cmdVel = "/mavros/setpoint_velocity/cmd_vel_unstamped"
+		rc = "/mavros/rc/override"
+		
+		self.cmd_pos_pub = rospy.Publisher(pLoc, PoseStamped,
+				 		  queue_size=1)
+		self.cmd_vel_pub = rospy.Publisher(cmdVel, Twist,
+						   queue_size=1)
+		self.rc_override = rospy.Publisher(rc, OverrideRCIn,
+						   queue_size=1)
 		
 		# mode 0 = STABILIZE
 		# mode 4 = GUIDED
 		# mode 9 = LAND
-		self.mode_service = rospy.ServiceProxy('/mavros/set_mode', SetMode)
-		self.arm_service = rospy.ServiceProxy('/mavros/cmd/arming', CommandBool)
-		self.takeoff_service = rospy.ServiceProxy('/mavros/cmd/takeoff', CommandTOL)
+		
+		mode = '/mavros/set_mode'
+		arm = '/mavros/cmd/arming'
+		takeoff = '/mavros/cmd/takeoff'
+		
+		self.mode_service = rospy.ServiceProxy(mode, SetMode)
+		self.arm_service = rospy.ServiceProxy(arm,
+						      CommandBool)
+		self.takeoff_service = rospy.ServiceProxy(takeoff,
+						          CommandTOL)
 		
 		self.rc = RCIn()
 		self.pose = Pose()
@@ -318,8 +334,8 @@ class MavController:
 	def goto(self, pose):
 		"""
 		Set the given pose as a the next setpoint by sending
-		a SET_POSITION_TARGET_LOCAL_NED message. The copter must
-		be in GUIDED mode for this to work.
+		a SET_POSITION_TARGET_LOCAL_NED message.
+		The copter must be in GUIDED mode for this to work.
 		"""
 		pose_stamped = PoseStamped()
 		pose_stamped.header.stamp = self.timestamp
@@ -331,7 +347,8 @@ class MavController:
 		pose.position.x = x
 		pose.position.y = y
 		pose.position.z = z
-		quat = tf.transformations.quaternion_from_euler(ro, pi, ya + pi_2)
+		quat = tf.transformations.quaternion_from_euler(ro,pi,
+		 					     ya+pi_2)
 		pose.orientation.x = quat[0]
 		pose.orientation.y = quat[1]
 		pose.orientation.z = quat[2]
@@ -340,8 +357,8 @@ class MavController:
 		
 	def set_vel(self, vx, vy, vz, avx=0, avy=0, avz=0):
 		"""
-		Send comand velocities. Must be in GUIDED mode. Assumes angular
-		velocities are zero by default.
+		Send comand velocities. Must be in GUIDED mode.
+		Assumes angular velocities are zero by default.
 		"""
 		cmd_vel = Twist()
 		cmd_vel.linear.x = vx
@@ -366,7 +383,8 @@ class MavController:
 		
 	def takeoff(self, height=1.0):
 		"""
-		Arm the throttle, takeoff to a few feet, and set to guided mode
+		Arm the throttle, takeoff to a few feet, and
+		set to guided mode
 		"""
 		# Set to stabilize mode for arming
 		mode_resp = self.mode_service(custom_mode="4")
@@ -384,13 +402,12 @@ class MavController:
 	
 def simple_demo():
 	"""
-	A simple demonstration of using mavros commands to control a UAV.
+	A simple demonstration of using
+	mavros commands to control a UAV.
 	"""
 	c = MavController()
 	rospy.sleep(1)
-	
 	alt = 1.0
-	
 	print("Takeoff " + str(alt))
 	c.takeoff(alt)
 	rospy.sleep(2)
