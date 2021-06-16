@@ -263,11 +263,11 @@ ROS сосредоточена на максимизации повторног�
 \begin{Program}[H]
 	\caption{Пример ROS-ноды на языке Python} \label{lst:1}
 \begin{MyCode}
-	import rospy
-	
-	rospy.init_node('my_ros_node')  # имя ROS-ноды
-	
-	rospy.spin()  # входим в бесконечный цикл...
+import rospy
+
+rospy.init_node('my_ros_node')  # имя ROS-ноды
+
+rospy.spin()  # входим в бесконечный цикл...
 \end{MyCode}
 \end{Program}
 
@@ -287,25 +287,25 @@ ROS сосредоточена на максимизации повторног�
 \begin{Program}[H]
 	\caption{Пример публикации сообщения типа std\_msgs / String (строка) в топик foo} \label{lst:2}
 \begin{MyCode}
-	from std_msgs.msg import String
-	
-	# создаем Publisher'а
-	foo_pub = rospy.Publisher('/foo', String, queue_size=1)
-	
-	# публикуем сообщение
-	foo_pub.publish(data='Hello, world!')
+from std_msgs.msg import String
+
+# создаем Publisher'а
+foo_pub = rospy.Publisher('/foo', String, queue_size=1)
+
+# публикуем сообщение
+foo_pub.publish(data='Hello, world!')
 \end{MyCode}
 \end{Program}
 
 \begin{Program}[H]
 	\caption{Пример подписки на топик /foo на языке Python} \label{lst:3}
 \begin{MyCode}
-	def foo_callback(msg):
-		print msg.data
-	
-	#При получении сообщения в топик /foo
-	#будет вызвана функция foo_callback.
-	rospy.Subscriber('/foo', String, foo_callback)
+def foo_callback(msg):
+	print msg.data
+
+#При получении сообщения в топик /foo
+#будет вызвана функция foo_callback.
+rospy.Subscriber('/foo', String, foo_callback)
 \end{MyCode}
 \end{Program}
 
@@ -319,19 +319,19 @@ ROS сосредоточена на максимизации повторног�
 \begin{Program}[H]
 	\caption{Пример вызова ROS-сервиса из языка Python} \label{lst:4}
 \begin{MyCode}
-	from clover.srv import GetTelemetry
-	
-	# Создаем обертку над сервисом get_telemetry
-	# пакета clover с типом GetTelemetry:
-	get_telemetry = rospy.ServiceProxy('get_telemetry',
-	  srv.GetTelemetry)
-	
-	# Вызываем сервис и получаем телеметрию квадрокоптера:
-	telemetry = get_telemetry()
-	# С сервисами можно также работать при помощи утилиты rosservice.
-	# Так можно вызвать сервис /get_telemetry из командной строки:
-	
-	rosservice call /get_telemetry "{frame_id: ''}"
+from clover.srv import GetTelemetry
+
+# Создаем обертку над сервисом get_telemetry
+# пакета clover с типом GetTelemetry:
+get_telemetry = rospy.ServiceProxy('get_telemetry',
+srv.GetTelemetry)
+
+# Вызываем сервис и получаем телеметрию квадрокоптера:
+telemetry = get_telemetry()
+# С сервисами можно также работать при помощи утилиты rosservice.
+# Так можно вызвать сервис /get_telemetry из командной строки:
+
+rosservice call /get_telemetry "{frame_id: ''}"
 \end{MyCode}
 \end{Program}
 

@@ -47,35 +47,35 @@
 Для получения телеметрии полетного контроллера необходимо в файле /opt/ros/melodic/share/mavros/launch/px4.launch поменять параметр fcu\_url, указав нужный адрес и порт. Параметр gcs\_url задает адрес для проксирования MAVLink сообщений под нужды qgroundcontrol (листинг \ref{lst:9}):
 \begin{Program}[H]
 	\caption{Измененные параметры в launch файле mavros} \label{lst:9}
-	\begin{MyCode}
-	<arg name="fcu_url" default="tcp://192.168.1.148:2000?ids=1,240"/>   
-	<arg name="gcs_url" default="udp://@127.0.0.1:14555"/>
-	\end{MyCode}
+\begin{MyCode}
+<arg name="fcu_url" default="tcp://192.168.1.148:2000?ids=1,240"/>   
+<arg name="gcs_url" default="udp://@127.0.0.1:14555"/>
+\end{MyCode}
 \end{Program}
 
 \subsubsection{Подготовка инструментов для получения и обработки видеопотока}
 Для получения трансляции и публикации топиков с изображением с камеры используется пакет gscam. Он собирается из репозитория \url{https://github.com/ros-drivers/gscam} командами, представленными в листинге \ref{lst:10}:
 \begin{Program}[H]
 	\caption{Сборка gscam} \label{lst:10}
-	\begin{MyCode}
-	$ git clone https://github.com/ros-drivers/gscam
-	$ cd gscam
-	$ cmake -DGSTREAMER_VERSION_1_x=On
-	$ сmake install
-	\end{MyCode}
+\begin{MyCode}
+$ git clone https://github.com/ros-drivers/gscam
+$ cd gscam
+$ cmake -DGSTREAMER_VERSION_1_x=On
+$ сmake install
+\end{MyCode}
 \end{Program}
 
 Распознавание карты aruco маркеров на изображении, получаемом из топиков gscam, и публикацию полученных координат в топик /vision/pose производит пакет aruco\_gridboard. Команды для сборки этого пакета представлены в листинге \ref{lst:11}:
 \begin{Program}[H]
 	\caption{Сборка aruco\_gridboard} \label{lst:11}
-	\begin{MyCode}	
-	$ cd ~/catkin_ws/src
-	$ git clone https://github.com/anbello/aruco_gridboard.git
-	$ cd ..
-	$ catkin_make
-	$ source devel/setup.bash
-	$ catkin_make --only-pkg-with-deps aruco_gridboard
-	\end{MyCode}
+\begin{MyCode}	
+$ cd ~/catkin_ws/src
+$ git clone https://github.com/anbello/aruco_gridboard.git
+$ cd ..
+$ catkin_make
+$ source devel/setup.bash
+$ catkin_make --only-pkg-with-deps aruco_gridboard
+\end{MyCode}
 \end{Program}
 
 Проделанных шагов достаточно, чтобы на наземной станции отобразить положение дрона относительно карты маркеров.
