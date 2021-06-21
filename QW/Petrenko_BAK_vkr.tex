@@ -147,21 +147,33 @@
 
 \thispagestyle{empty} % страница определений не нумеруется
 
-Бод-рейт --- скорость передачи данных с подключенного устройства
+Бод-рейт --- скорость передачи данных с подключенного устройства.
 
-Квадрокоптер --- БПЛА мультироторного типа с четырьмя несущими винтами
+Квадрокоптер --- БПЛА мультироторного типа с четырьмя несущими винтами.
 
-ПИД регулятор --- алгоритм автоматического управления, применяемый для стабилизации дрона
+ПИД регулятор --- алгоритм автоматического управления, применяемый для стабилизации дрона.
 
-Релиз --- выпуск окончательной версии программы, готового для использования продукта
+Релиз --- выпуск окончательной версии программы, готового для использования продукта.
 
-Catkin --- система сборки для ROS
+APM --- программное обеспечение для управления полетом на платформе Arduino Mega с открытым исходным кодом.
 
-OSD --- текст, отображаемый поверх основного изображения, поступающего с видеокамеры на дисплей
+Catkin --- система сборки для ROS.
 
-Pipeline --- конвейер данных, представляет собой набор элементов обработки данных, соединенных последовательно, где выход одного элемента является входом следующего
+FIFO --- способ организации и манипулирования данными относительно времени и приоритетов; описывает принцип обработки очереди по принципу: «первым пришёл -- первым обслужен».
 
-UART --- двусторонний порт для обмена данными между полетным контроллером и периферией
+IMU --- гироскопическое устройство, предназначенное для стабилизации отдельных предметов или приборов, а также для определения угловых отклонений предметов.
+
+KV --- количество оборотов на вольт.
+
+MVP --- продукт, обладающий минимальными, но достаточными для удовлетворения первых потребителей функциями.
+
+OSD --- текст, отображаемый поверх основного изображения, поступающего с видеокамеры на дисплей.
+
+Pipeline --- конвейер данных, представляет собой набор элементов обработки данных, соединенных последовательно, где выход одного элемента является входом следующего.
+
+PX4 --- программное обеспечение для управления полетом с открытым исходным кодом.
+
+UART --- двусторонний порт для обмена данными между полетным контроллером и периферией.
 
 \pagebreak
 \thispagestyle{empty}
@@ -174,9 +186,17 @@ UART --- двусторонний порт для обмена данными м
 
 НИР --- Научно-исследовательская работа
 
+НСК --- Неподвижная система координат
+
 ПАК --- Программно-аппаратный комплекс
 
 ПИД --- Пропорционально-интегрально-дифференциальный
+
+СК --- Система координат
+
+ССК --- Связанная система координат
+
+ArUco --- Augmented Reality University of Cordoba
 
 AWG --- American Wire Gauge
 
@@ -184,11 +204,21 @@ BEC --- Battery Eliminator Circuit
 
 CLI --- Command Line Interface
 
+COEX --- Copter Express
+
 CSI --- Common System Interface
 
 DSI --- Display Serial Interface
 
+ECL --- Estimation and Control Library
+
+EKF --- Extended Kalman Filter
+
 ESR --- Equivalent Series Resistance
+
+FCU --- Flight Controller Unit
+
+FIFO --- First In First Out
 
 FPV --- First Person View
 
@@ -196,7 +226,11 @@ GCS --- Ground Control Station
 
 GPS --- Global Positioning System
 
+IMU --- Inertial Measurement Unit
+
 MAVLink --- Micro Air Vehicle Link
+
+MVP --- Minimum Viable Product
 
 OSD --- On Screen Display
 
@@ -261,7 +295,7 @@ UART --- Universal asynchronous receiver/transmitter
 \addcontentsline{toc}{section}{Приложение А}
 
 \begin{center}
-	Листинг 1 -- Пример кода mavros\_control.py для автономной миссии
+	Листинг А.1 -- Пример кода mavros\_control.py для автономной миссии
 \end{center}
 
 
@@ -306,7 +340,7 @@ class MavController:
 						   queue_size=1)
 		
 		# mode 0 = STABILIZE
-		# mode 4 = GUIDED
+		# mode 4 = OFFBOARD
 		# mode 9 = LAND
 		
 		mode = '/mavros/set_mode'
@@ -340,7 +374,7 @@ class MavController:
 		"""
 		Set the given pose as a the next setpoint by sending
 		a SET_POSITION_TARGET_LOCAL_NED message.
-		The copter must be in GUIDED mode for this to work.
+		The copter must be in OFFBOARD mode for this to work.
 		"""
 		pose_stamped = PoseStamped()
 		pose_stamped.header.stamp = self.timestamp
@@ -362,7 +396,7 @@ class MavController:
 		
 	def set_vel(self, vx, vy, vz, avx=0, avy=0, avz=0):
 		"""
-		Send comand velocities. Must be in GUIDED mode.
+		Send comand velocities. Must be in OFFBOARD mode.
 		Assumes angular velocities are zero by default.
 		"""
 		cmd_vel = Twist()
@@ -389,7 +423,7 @@ class MavController:
 	def takeoff(self, height=1.0):
 		"""
 		Arm the throttle, takeoff to a few feet, and
-		set to guided mode
+		set to OFFBOARD mode
 		"""
 		# Set to stabilize mode for arming
 		mode_resp = self.mode_service(custom_mode="4")
