@@ -89,6 +89,10 @@ Nmap done: 256 IP addresses (4 hosts up) scanned in 4.42 seconds
 \$ v4l2-ctl --list-formats-ext -d /dev/video0
 \end{MyCode}
 
+Запустили камеру:
+$ sudo raspi-config
+и выбрать enable camera
+
 Работают, но с задержкой 600мс:
 \begin{MyCode}
 На rasbberry:
